@@ -4,54 +4,62 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from "react-native-responsive-screen";
+import HomeHeader from "../components/HomeHeader";
+import { Transaction } from "../types/types";
+import TransactionItem from "../components/TransactionItem";
+
+const dummyData: Transaction[] = [
+  {
+    type: "expense",
+    title: "Youtube Premium",
+    category: "Subscription",
+    date: "March 12",
+    amount: "54,99",
+  },
+  {
+    type: "income",
+    title: "Income",
+    category: "Payment",
+    date: "March 12",
+    amount: "54,99",
+  },
+];
 
 export default function HomeScreen() {
   return (
     <View className="flex-1 bg-backgroundColor">
-      <View
-        className="bg-headerBg rounded-b-2xl"
-        style={{ height: hp(25), padding: wp(8) }}
-      >
-        {/** Header */}
-        <View className="flex-row justify-between items-center">
-          <View>
+      <HomeHeader />
+      <View style={{ padding: wp(6), gap: wp(5) }}>
+        {dummyData.length > 0 ? (
+          Array.from(dummyData, (transaction, index) => (
+            <TransactionItem key={index} transaction={transaction} />
+          ))
+        ) : (
+          <View
+            className="justify-center items-center"
+            style={{ height: hp(55), gap: wp(3) }}
+          >
+            <Text style={{ fontSize: 64 }}>📭</Text>
             <Text
+              className="text-textColor"
+              style={{ fontFamily: "Poppins-SemiBold", fontSize: 20 }}
+            >
+              No Transactions Yet
+            </Text>
+            <Text
+              className="text-center"
               style={{
                 fontFamily: "Poppins-SemiBold",
-                fontSize: 25,
-                color: "#D8D8D8",
+                fontSize: 12,
+                color: "#9CA3AF",
               }}
             >
-              Hey, Mehmetcan
-            </Text>
-            <Text
-              style={{
-                fontFamily: "OpenSans-Regular",
-                fontSize: 16,
-                color: "#D8D8D8",
-                maxWidth: wp(65),
-              }}
-            >
-              Welcome back, your calculations are still perfect 👌
+              Your transaction history is empty. Tap the button below to add
+              your first transaction!
             </Text>
           </View>
-          {/** Avatar */}
-          <Pressable
-            onPress={() => {}}
-            className="bg-[#79A8FF] items-center justify-center"
-            style={{ width: wp(16), height: wp(16), borderRadius: wp(6) }}
-          >
-            <Image
-              source={require("../../assets/avatars/avatar1_male.webp")}
-              style={{ width: wp(12), height: wp(12) }}
-              resizeMode="contain"
-            />
-          </Pressable>
-        </View>
-        {/** Search Bar */}
-        <View className="flex-row items-center justify-between" />
+        )}
       </View>
-      <Text>HomeScreen</Text>
     </View>
   );
 }

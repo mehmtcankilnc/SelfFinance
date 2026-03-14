@@ -154,7 +154,7 @@ export default function GlobalBottomSheet() {
           style={rSheetStyle}
           className="absolute bottom-0 w-full bg-backgroundColor rounded-t-2xl shadow-lg md:max-w-lg md:mx-auto md:bottom-4 md:rounded-xl"
         >
-          <Animated.View className="w-16 h-1 bg-main rounded-full self-center my-3" />
+          <Animated.View className="w-16 h-1 bg-action rounded-full self-center my-3" />
           {content ? renderContent(content) : null}
         </Animated.View>
       </GestureDetector>
