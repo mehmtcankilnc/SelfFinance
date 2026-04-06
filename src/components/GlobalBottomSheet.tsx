@@ -8,6 +8,7 @@ import Animated, {
   useSharedValue,
   withSpring,
   withTiming,
+  useAnimatedKeyboard,
 } from "react-native-reanimated";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { scheduleOnRN } from "react-native-worklets";
@@ -46,6 +47,8 @@ export default function GlobalBottomSheet() {
   const SNAP_POINT = SCREEN_HEIGHT * 0.3;
   const gestureContentY = useSharedValue(0);
   const translateY = useSharedValue(SCREEN_HEIGHT);
+
+  const keyboard = useAnimatedKeyboard();
 
   const [isSheetVisible, setIsSheetVisible] = useState(false);
 
@@ -126,7 +129,7 @@ export default function GlobalBottomSheet() {
 
   const rSheetStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateY: translateY.value }],
+      transform: [{ translateY: translateY.value - keyboard.height.value }],
     };
   });
 

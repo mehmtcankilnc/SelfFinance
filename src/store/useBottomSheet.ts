@@ -24,7 +24,6 @@ export const useBottomSheet = create<BottomSheetState>((set) => ({
   closeBottomSheet: () =>
     set({
       isOpen: false,
-      content: null,
     }),
   clearBottomSheetContent: () => set({ content: null }),
 }));

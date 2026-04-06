@@ -1,4 +1,4 @@
-import { View, Text, Pressable, Image } from "react-native";
+import { View, Text, Pressable, Image, FlatList } from "react-native";
 import React from "react";
 import {
   heightPercentageToDP as hp,
@@ -10,6 +10,7 @@ import TransactionItem from "../components/TransactionItem";
 
 const dummyData: Transaction[] = [
   {
+    id: 1,
     type: "expense",
     title: "Youtube Premium",
     category: "Subscription",
@@ -17,6 +18,7 @@ const dummyData: Transaction[] = [
     amount: "54,99",
   },
   {
+    id: 2,
     type: "income",
     title: "Income",
     category: "Payment",
@@ -31,9 +33,15 @@ export default function HomeScreen() {
       <HomeHeader />
       <View style={{ padding: wp(6), gap: wp(5) }}>
         {dummyData.length > 0 ? (
-          Array.from(dummyData, (transaction, index) => (
-            <TransactionItem key={index} transaction={transaction} />
-          ))
+          <FlatList
+            data={dummyData}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item: transaction }) => (
+              <TransactionItem key={transaction.id} transaction={transaction} />
+            )}
+            contentContainerStyle={{ gap: wp(5) }}
+            showsVerticalScrollIndicator={false}
+          />
         ) : (
           <View
             className="justify-center items-center"

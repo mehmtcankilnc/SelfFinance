@@ -6,6 +6,7 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import GlobalBottomSheet from "./src/components/GlobalBottomSheet";
 import { StatusBar } from "expo-status-bar";
 import { useCallback } from "react";
+import DropdownProvider from "./src/providers/DropdownProvider";
 import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 
@@ -33,10 +34,12 @@ export default function App() {
           style={{ flex: 1, backgroundColor: "#313131" }}
           edges={["top", "left", "right"]}
         >
-          <NavigationContainer>
-            <BottomTabs />
-            <GlobalBottomSheet />
-          </NavigationContainer>
+          <DropdownProvider>
+            <NavigationContainer>
+              <BottomTabs />
+              <GlobalBottomSheet />
+            </NavigationContainer>
+          </DropdownProvider>
         </SafeAreaView>
         <StatusBar style="light" backgroundColor="black" />
       </SafeAreaProvider>
