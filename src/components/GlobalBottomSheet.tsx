@@ -14,6 +14,7 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { scheduleOnRN } from "react-native-worklets";
 import { useBottomSheet } from "../store/useBottomSheet";
 import AddTransactionContent from "./AddTransactionContent";
+import EditAvatarContent from "./EditAvatarContent";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -33,6 +34,8 @@ const renderContent = (content: any) => {
   switch (type) {
     case "ADD_SCREEN":
       return <AddTransactionContent {...props} />;
+    case "EDIT_AVATAR":
+      return <EditAvatarContent {...props} />;
     default:
       return null;
   }

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export type BottomSheetContentType = "ADD_SCREEN";
+export type BottomSheetContentType = "ADD_SCREEN" | "EDIT_AVATAR";
 
 interface BottomSheetState {
   isOpen: boolean;

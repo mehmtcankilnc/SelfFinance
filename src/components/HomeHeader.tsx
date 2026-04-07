@@ -14,8 +14,16 @@ import Animated, {
 } from "react-native-reanimated";
 import CustomDropdown from "./CustomDropdown";
 import { DropdownItem } from "../types/types";
+import { useNavigation } from "@react-navigation/native";
+import { useProfile } from "../store/useProfile";
+import { avatarData } from "../data/avatarData";
+
+const HEIGHT_VALUE = hp(35);
 
 export default function HomeHeader() {
+  const navigation = useNavigation();
+  const { avatar, displayName } = useProfile();
+
   const [isFilterSectionOpen, setIsFilterSectionOpen] = useState(false);
 
   const progress = useSharedValue(0);
@@ -24,7 +32,7 @@ export default function HomeHeader() {
 
   const handleToggleFilterSection = () => {
     if (progress.value == 0) {
-      height.value = withTiming(280, { duration: 300 });
+      height.value = withTiming(HEIGHT_VALUE, { duration: 300 });
       borderRadius.value = withTiming(0, { duration: 200 });
       progress.value = 1;
       setIsFilterSectionOpen(true);
@@ -78,11 +86,12 @@ export default function HomeHeader() {
             <Text
               style={{
                 fontFamily: "Poppins-SemiBold",
-                fontSize: 25,
+                fontSize: 24,
+                lineHeight: 36,
                 color: "#D8D8D8",
               }}
             >
-              Hey, Mehmetcan
+              Hey, {displayName}
             </Text>
             <Text
               style={{
@@ -97,12 +106,12 @@ export default function HomeHeader() {
           </View>
           {/** Avatar */}
           <Pressable
-            onPress={() => {}}
+            onPress={() => navigation.getParent()?.navigate("Profile")}
             className="bg-[#79A8FF] items-center justify-center"
             style={{ width: wp(16), height: wp(16), borderRadius: wp(6) }}
           >
             <Image
-              source={require("../../assets/avatars/avatar1_male.webp")}
+              source={avatarData.find((av) => av.id === avatar)?.image}
               style={{ width: wp(12), height: wp(12) }}
               resizeMode="contain"
             />

@@ -1,3 +1,5 @@
+import { ImageSourcePropType } from "react-native";
+
 export interface Transaction {
   id: number;
   type: "expense" | "income";
@@ -10,4 +12,9 @@ export interface Transaction {
 export interface DropdownItem {
   text: string;
   value: number;
+}
+
+export interface Avatar {
+  id: number;
+  image: ImageSourcePropType;
 }

@@ -1,4 +1,4 @@
-import { View, Text, Pressable, Image, FlatList } from "react-native";
+import { View, Text, FlatList } from "react-native";
 import React from "react";
 import {
   heightPercentageToDP as hp,
@@ -25,13 +25,29 @@ const dummyData: Transaction[] = [
     date: "March 12",
     amount: "54,99",
   },
+  {
+    id: 3,
+    type: "income",
+    title: "Income",
+    category: "Payment",
+    date: "March 12",
+    amount: "54,99",
+  },
+  {
+    id: 4,
+    type: "income",
+    title: "Income",
+    category: "Payment",
+    date: "March 12",
+    amount: "54,99",
+  },
 ];
 
 export default function HomeScreen() {
   return (
     <View className="flex-1 bg-backgroundColor">
       <HomeHeader />
-      <View style={{ padding: wp(6), gap: wp(5) }}>
+      <View style={{ flex: 1, padding: wp(6), gap: wp(5) }}>
         {dummyData.length > 0 ? (
           <FlatList
             data={dummyData}

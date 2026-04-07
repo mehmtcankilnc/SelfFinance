@@ -10,9 +10,7 @@ import { useBottomSheet } from "../store/useBottomSheet";
 import CustomDropdown from "./CustomDropdown";
 import { DropdownItem } from "../types/types";
 
-interface Props {}
-
-export default function AddTransactionContent({}: Props) {
+export default function AddTransactionContent() {
   const { closeBottomSheet } = useBottomSheet();
 
   const [transactionTitle, setTransactionTitle] = useState("");

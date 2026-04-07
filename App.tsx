@@ -1,7 +1,6 @@
 import "./global.css";
 import { NavigationContainer } from "@react-navigation/native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import BottomTabs from "./src/navigation/BottomTabs";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import GlobalBottomSheet from "./src/components/GlobalBottomSheet";
 import { StatusBar } from "expo-status-bar";
@@ -9,6 +8,7 @@ import { useCallback } from "react";
 import DropdownProvider from "./src/providers/DropdownProvider";
 import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
+import AppStack from "./src/navigation/AppStack";
 
 export default function App() {
   const [fontsLoaded, fontError] = Font.useFonts({
@@ -36,7 +36,7 @@ export default function App() {
         >
           <DropdownProvider>
             <NavigationContainer>
-              <BottomTabs />
+              <AppStack />
               <GlobalBottomSheet />
             </NavigationContainer>
           </DropdownProvider>

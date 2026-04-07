@@ -5,8 +5,14 @@ import {
   widthPercentageToDP as wp,
 } from "react-native-responsive-screen";
 import { SmoothIcon } from "smooth-icon";
+import { useNavigation } from "@react-navigation/native";
+import { useProfile } from "../store/useProfile";
+import { avatarData } from "../data/avatarData";
 
 export default function AnalyticsScreen() {
+  const navigation = useNavigation();
+  const { avatar } = useProfile();
+
   return (
     <View className="flex-1 bg-backgroundColor">
       {/** Header */}
@@ -18,7 +24,8 @@ export default function AnalyticsScreen() {
           <Text
             style={{
               fontFamily: "Poppins-SemiBold",
-              fontSize: 25,
+              fontSize: 24,
+              lineHeight: 36,
               color: "#D8D8D8",
             }}
           >
@@ -37,12 +44,12 @@ export default function AnalyticsScreen() {
         </View>
         {/** Avatar */}
         <Pressable
-          onPress={() => {}}
+          onPress={() => navigation.getParent()?.navigate("Profile")}
           className="bg-[#79A8FF] items-center justify-center"
           style={{ width: wp(16), height: wp(16), borderRadius: wp(6) }}
         >
           <Image
-            source={require("../../assets/avatars/avatar1_male.webp")}
+            source={avatarData.find((av) => av.id === avatar)?.image}
             style={{ width: wp(12), height: wp(12) }}
             resizeMode="contain"
           />

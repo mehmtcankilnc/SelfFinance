@@ -57,6 +57,7 @@ export default function BottomTabs() {
           height: 70,
         },
       }}
+      initialRouteName="Home"
     >
       <Tab.Screen
         name="Home"
