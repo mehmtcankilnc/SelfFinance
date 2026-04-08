@@ -64,10 +64,7 @@ export default function HomeHeader() {
   const [filterType, setFilterType] = useState<"all" | "income" | "expense">(
     "all",
   );
-  const [filterCategory, setFilterCategory] = useState<DropdownItem>({
-    text: "All Categories",
-    value: 1,
-  });
+  const [filterCategory, setFilterCategory] = useState("All Categories");
   const [filterDateRange, setFilterDateRange] = useState<
     "all" | "today" | "weekly" | "monthly"
   >("all");
@@ -89,7 +86,9 @@ export default function HomeHeader() {
                 fontSize: 24,
                 lineHeight: 36,
                 color: "#D8D8D8",
+                maxWidth: wp(70),
               }}
+              numberOfLines={1}
             >
               Hey, {displayName}
             </Text>
@@ -236,17 +235,8 @@ export default function HomeHeader() {
           <CustomDropdown
             dropdownData={[
               { text: "All Categories", value: 1 },
-              { text: "deneme2", value: 2 },
-              { text: "deneme", value: 3 },
-              { text: "deneme2", value: 4 },
-              { text: "deneme", value: 5 },
-              { text: "deneme2", value: 6 },
-              { text: "deneme", value: 7 },
-              { text: "deneme2", value: 8 },
-              { text: "deneme", value: 9 },
-              { text: "deneme2", value: 10 },
-              { text: "deneme", value: 11 },
-              { text: "deneme2", value: 12 },
+              { text: "deneme", value: 2 },
+              { text: "deneme2", value: 3 },
             ]}
             placeholder="Choose a Category"
             item={filterCategory}

@@ -13,8 +13,8 @@ type Props = {
   dropdownData: DropdownItem[];
   icon?: ReactNode;
   placeholder?: string;
-  onSelect?: (item: DropdownItem) => void;
-  item?: DropdownItem;
+  onSelect?: (item: string) => void;
+  item?: string;
 };
 
 export default function CustomDropdown({
@@ -25,15 +25,13 @@ export default function CustomDropdown({
   item,
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<DropdownItem | undefined>(
-    item,
-  );
+  const [selectedItem, setSelectedItem] = useState<string | undefined>(item);
 
   const ref = useRef<View>(null);
 
   const { openDropdown, closeDropdown } = useDropdown();
 
-  const handleSelect = (item: DropdownItem) => {
+  const handleSelect = (item: string) => {
     setSelectedItem(item);
     if (onSelect) onSelect(item);
   };
@@ -58,7 +56,7 @@ export default function CustomDropdown({
           <Pressable
             key={item.value}
             onPress={() => {
-              handleSelect(item);
+              handleSelect(item.text);
               closeDropdown();
               setIsOpen(false);
             }}
@@ -68,13 +66,17 @@ export default function CustomDropdown({
               borderBottomWidth: index === dropdownData.length - 1 ? 0 : 1,
               borderBottomColor: "#F3F4F6",
               backgroundColor:
-                selectedItem?.value === item.value ? "#FDF1E7" : "transparent",
+                selectedItem && selectedItem === item.text
+                  ? "#FDF1E7"
+                  : "transparent",
             }}
           >
             <Text
               style={{
                 color:
-                  selectedItem?.value === item.value ? "#C67C4E" : "#374151",
+                  selectedItem && selectedItem === item.text
+                    ? "#C67C4E"
+                    : "#374151",
                 fontFamily: "OpenSans-Regular",
               }}
             >
@@ -135,7 +137,7 @@ export default function CustomDropdown({
             fontFamily: "OpenSans-Regular",
           }}
         >
-          {selectedItem ? selectedItem.text : placeholder}
+          {selectedItem ? selectedItem : placeholder}
         </Text>
         <SmoothIcon
           name={isOpen ? "up-chevron" : "down-chevron"}

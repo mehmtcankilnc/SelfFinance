@@ -3,6 +3,7 @@ import React from "react";
 import { Transaction } from "../types/types";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 import { SmoothIcon } from "smooth-icon";
+import { useProfile } from "../store/useProfile";
 
 type Props = {
   transaction: Transaction;
@@ -10,6 +11,7 @@ type Props = {
 
 export default function TransactionItem({ transaction }: Props) {
   const isExpense = transaction.type === "expense";
+  const { currency } = useProfile();
 
   return (
     <View
@@ -62,7 +64,7 @@ export default function TransactionItem({ transaction }: Props) {
         numberOfLines={1}
       >
         {isExpense ? "-" : "+"}
-        {transaction.amount}
+        {transaction.amount} {currency.slice(5, 6)}
       </Text>
     </View>
   );

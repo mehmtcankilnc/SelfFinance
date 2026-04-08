@@ -8,17 +8,53 @@ import { SmoothIcon } from "smooth-icon";
 import CustomTextInput from "./CustomTextInput";
 import { useBottomSheet } from "../store/useBottomSheet";
 import CustomDropdown from "./CustomDropdown";
-import { DropdownItem } from "../types/types";
+import { Transaction } from "../types/types";
+import { useTransactions } from "../store/useTransactions";
+import { z } from "zod";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const addTransactionSchema = z.object({
+  transactionName: z.string().min(1, "*Required Field"),
+  transactionCategory: z.string().min(1, "*Required Field"),
+  transactionAmount: z.string().min(1, "*Required Field"),
+  transactionDate: z.string().min(1, "*Required Field"),
+});
+
+type TransactionFromValues = z.infer<typeof addTransactionSchema>;
 
 export default function AddTransactionContent() {
   const { closeBottomSheet } = useBottomSheet();
+  const { transactions, addTransaction } = useTransactions();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<TransactionFromValues>({
+    resolver: zodResolver(addTransactionSchema),
+    defaultValues: {
+      transactionName: "",
+      transactionCategory: "",
+      transactionAmount: "",
+      transactionDate: "",
+    },
+  });
 
-  const [transactionTitle, setTransactionTitle] = useState("");
-  const [transactionCategory, setTransactionCategory] =
-    useState<DropdownItem>();
-  const [transactionAmount, setTransactionAmount] = useState("");
-  const [transactionDate, setTransactionDate] = useState("");
   const [isExpense, setIsExpense] = useState(true);
+
+  const handleAddNewTransaction = (data: TransactionFromValues) => {
+    let newTransaction: Transaction = {
+      id: transactions.length + 1,
+      type: isExpense ? "expense" : "income",
+      title: data.transactionName,
+      category: data.transactionCategory,
+      date: data.transactionDate,
+      amount: data.transactionAmount,
+    };
+
+    addTransaction(newTransaction);
+    closeBottomSheet();
+  };
 
   return (
     <ScrollView
@@ -27,6 +63,7 @@ export default function AddTransactionContent() {
       keyboardShouldPersistTaps="handled"
       bounces={false}
     >
+      {/** Content Title & Header */}
       <View
         className="flex-row items-center justify-between border-b border-b-[#EBEBEB]"
         style={{ paddingBottom: wp(2), paddingHorizontal: wp(6) }}
@@ -55,12 +92,23 @@ export default function AddTransactionContent() {
             className="text-secondaryText"
             style={{ fontFamily: "Poppins-Medium", fontSize: 12 }}
           >
-            Transaction Name
+            Transaction Name{" "}
+            {errors.transactionName && (
+              <Text className="color-[#e74c3c]">
+                {errors.transactionName.message}
+              </Text>
+            )}
           </Text>
-          <CustomTextInput
-            text={transactionTitle}
-            onTextChange={(val) => setTransactionTitle(val)}
-            placeholder={"e.g., Youtube Premium"}
+          <Controller
+            control={control}
+            name={"transactionName"}
+            render={({ field: { onChange, value } }) => (
+              <CustomTextInput
+                text={value}
+                onTextChange={onChange}
+                placeholder={"e.g., Youtube Premium"}
+              />
+            )}
           />
         </View>
         {/** Transaction Category */}
@@ -76,25 +124,26 @@ export default function AddTransactionContent() {
             className="text-secondaryText"
             style={{ fontFamily: "Poppins-Medium", fontSize: 12 }}
           >
-            Category
+            Category{" "}
+            {errors.transactionCategory && (
+              <Text className="color-[#e74c3c]">
+                {errors.transactionCategory.message}
+              </Text>
+            )}
           </Text>
-          <CustomDropdown
-            dropdownData={[
-              { text: "deneme", value: 1 },
-              { text: "deneme2", value: 2 },
-              { text: "deneme", value: 3 },
-              { text: "deneme2", value: 4 },
-              { text: "deneme", value: 5 },
-              { text: "deneme2", value: 6 },
-              { text: "deneme", value: 7 },
-              { text: "deneme2", value: 8 },
-              { text: "deneme", value: 9 },
-              { text: "deneme2", value: 10 },
-              { text: "deneme", value: 11 },
-              { text: "deneme2", value: 12 },
-            ]}
-            placeholder="Choose a Category"
-            onSelect={(cat) => setTransactionCategory(cat)}
+          <Controller
+            control={control}
+            name="transactionCategory"
+            render={({ field: { onChange, value } }) => (
+              <CustomDropdown
+                dropdownData={[
+                  { text: "deneme", value: 1 },
+                  { text: "deneme2", value: 2 },
+                ]}
+                placeholder="Choose a Category"
+                onSelect={onChange}
+              />
+            )}
           />
         </View>
         {/** Transaction Amount */}
@@ -103,13 +152,24 @@ export default function AddTransactionContent() {
             className="text-secondaryText"
             style={{ fontFamily: "Poppins-Medium", fontSize: 12 }}
           >
-            Amount
+            Amount{" "}
+            {errors.transactionAmount && (
+              <Text className="color-[#e74c3c]">
+                {errors.transactionAmount.message}
+              </Text>
+            )}
           </Text>
-          <CustomTextInput
-            text={transactionTitle}
-            onTextChange={(val) => setTransactionAmount(val)}
-            placeholder={"0.00"}
-            type="numeric"
+          <Controller
+            control={control}
+            name="transactionAmount"
+            render={({ field: { onChange, value } }) => (
+              <CustomTextInput
+                text={value}
+                onTextChange={onChange}
+                placeholder={"0.00"}
+                type="numeric"
+              />
+            )}
           />
         </View>
         {/** Transaction Type */}
@@ -169,13 +229,64 @@ export default function AddTransactionContent() {
             className="text-secondaryText"
             style={{ fontFamily: "Poppins-Medium", fontSize: 12 }}
           >
-            Date
+            Date{" "}
+            {errors.transactionDate && (
+              <Text className="color-[#e74c3c]">
+                {errors.transactionDate.message}
+              </Text>
+            )}
           </Text>
-          <CustomTextInput // Custom Date modal gelmeli!
-            text={transactionTitle}
-            onTextChange={(val) => setTransactionTitle(val)}
-            placeholder={"08.03.2026"}
+          <Controller
+            control={control}
+            name="transactionDate"
+            render={({ field: { onChange, value } }) => (
+              <CustomTextInput // Custom Date modal gelmeli!
+                text={value}
+                onTextChange={onChange}
+                placeholder={"08.03.2026"}
+              />
+            )}
           />
+        </View>
+        {/** Buttons */}
+        <View className="flex-row" style={{ gap: wp(3), marginTop: wp(5) }}>
+          {/** Cancel Button */}
+          <Pressable
+            onPress={closeBottomSheet}
+            className="flex-1 rounded-2xl items-center justify-center"
+            style={{
+              height: hp(6),
+              backgroundColor: "#F3F4F6",
+            }}
+          >
+            <Text
+              className="color-secondaryText"
+              style={{
+                fontFamily: "OpenSans-Regular",
+                fontSize: 14,
+              }}
+            >
+              Cancel
+            </Text>
+          </Pressable>
+          {/** Add Button */}
+          <Pressable
+            onPress={handleSubmit(handleAddNewTransaction)}
+            className="flex-1 rounded-2xl items-center justify-center bg-action"
+            style={{
+              height: hp(6),
+            }}
+          >
+            <Text
+              style={{
+                fontFamily: "OpenSans-Regular",
+                fontSize: 14,
+                color: "#FFFFFF",
+              }}
+            >
+              Add Transaction
+            </Text>
+          </Pressable>
         </View>
       </View>
     </ScrollView>

@@ -5,52 +5,19 @@ import {
   widthPercentageToDP as wp,
 } from "react-native-responsive-screen";
 import HomeHeader from "../components/HomeHeader";
-import { Transaction } from "../types/types";
 import TransactionItem from "../components/TransactionItem";
-
-const dummyData: Transaction[] = [
-  {
-    id: 1,
-    type: "expense",
-    title: "Youtube Premium",
-    category: "Subscription",
-    date: "March 12",
-    amount: "54,99",
-  },
-  {
-    id: 2,
-    type: "income",
-    title: "Income",
-    category: "Payment",
-    date: "March 12",
-    amount: "54,99",
-  },
-  {
-    id: 3,
-    type: "income",
-    title: "Income",
-    category: "Payment",
-    date: "March 12",
-    amount: "54,99",
-  },
-  {
-    id: 4,
-    type: "income",
-    title: "Income",
-    category: "Payment",
-    date: "March 12",
-    amount: "54,99",
-  },
-];
+import { useTransactions } from "../store/useTransactions";
 
 export default function HomeScreen() {
+  const { transactions } = useTransactions();
+
   return (
     <View className="flex-1 bg-backgroundColor">
       <HomeHeader />
       <View style={{ flex: 1, padding: wp(6), gap: wp(5) }}>
-        {dummyData.length > 0 ? (
+        {transactions.length > 0 ? (
           <FlatList
-            data={dummyData}
+            data={transactions}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item: transaction }) => (
               <TransactionItem key={transaction.id} transaction={transaction} />
