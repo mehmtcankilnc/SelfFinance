@@ -8,10 +8,12 @@ import { SmoothIcon } from "smooth-icon";
 import { useNavigation } from "@react-navigation/native";
 import { useProfile } from "../store/useProfile";
 import { avatarData } from "../data/avatarData";
+import { useTransactions } from "../store/useTransactions";
 
 export default function AnalyticsScreen() {
   const navigation = useNavigation();
-  const { avatar } = useProfile();
+  const { avatar, currency } = useProfile();
+  const { totalIncome, totalExpense, balance } = useTransactions();
 
   return (
     <View className="flex-1 bg-backgroundColor">
@@ -84,7 +86,8 @@ export default function AnalyticsScreen() {
               color: "#10B981",
             }}
           >
-            $4500
+            {totalIncome}
+            {currency.slice(5, 6)}
           </Text>
         </View>
         {/** Expense */}
@@ -114,7 +117,8 @@ export default function AnalyticsScreen() {
               color: "#DC2626",
             }}
           >
-            $2500
+            {totalExpense}
+            {currency.slice(5, 6)}
           </Text>
         </View>
         {/** Balance */}
@@ -144,7 +148,8 @@ export default function AnalyticsScreen() {
               color: "#D17C4E",
             }}
           >
-            $2000
+            {balance}
+            {currency.slice(5, 6)}
           </Text>
         </View>
       </View>

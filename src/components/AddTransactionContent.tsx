@@ -13,12 +13,16 @@ import { useTransactions } from "../store/useTransactions";
 import { z } from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import DatePickerModal from "./DatePickerModal";
 
 const addTransactionSchema = z.object({
   transactionName: z.string().min(1, "*Required Field"),
   transactionCategory: z.string().min(1, "*Required Field"),
   transactionAmount: z.string().min(1, "*Required Field"),
-  transactionDate: z.string().min(1, "*Required Field"),
+  transactionDate: z.date({
+    error: (issue) =>
+      issue.input === undefined ? "*Required Field" : "*Invalid Input",
+  }),
 });
 
 type TransactionFromValues = z.infer<typeof addTransactionSchema>;
@@ -29,6 +33,8 @@ export default function AddTransactionContent() {
   const {
     control,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<TransactionFromValues>({
     resolver: zodResolver(addTransactionSchema),
@@ -36,11 +42,14 @@ export default function AddTransactionContent() {
       transactionName: "",
       transactionCategory: "",
       transactionAmount: "",
-      transactionDate: "",
+      transactionDate: new Date(),
     },
   });
 
+  const selectedDate = watch("transactionDate");
+
   const [isExpense, setIsExpense] = useState(true);
+  const [isDateModalVisible, setIsDateModalVisible] = useState(false);
 
   const handleAddNewTransaction = (data: TransactionFromValues) => {
     let newTransaction: Transaction = {
@@ -236,17 +245,26 @@ export default function AddTransactionContent() {
               </Text>
             )}
           </Text>
-          <Controller
-            control={control}
-            name="transactionDate"
-            render={({ field: { onChange, value } }) => (
-              <CustomTextInput // Custom Date modal gelmeli!
-                text={value}
-                onTextChange={onChange}
-                placeholder={"08.03.2026"}
-              />
-            )}
-          />
+          <Pressable
+            className="rounded-2xl border border-[#E5E7EB] justify-center"
+            style={{
+              height: hp(6),
+              backgroundColor: "#F9FAFB",
+              paddingLeft: wp(4),
+            }}
+            onPress={() => setIsDateModalVisible(true)}
+          >
+            <Text
+              style={{
+                fontFamily: "OpenSans-Regular",
+                color: selectedDate ? "#111827" : "#9CA3AF",
+              }}
+            >
+              {selectedDate
+                ? selectedDate.toLocaleDateString("tr-TR")
+                : "Select"}
+            </Text>
+          </Pressable>
         </View>
         {/** Buttons */}
         <View className="flex-row" style={{ gap: wp(3), marginTop: wp(5) }}>
@@ -288,6 +306,18 @@ export default function AddTransactionContent() {
             </Text>
           </Pressable>
         </View>
+        {/** Date Modal */}
+        <DatePickerModal
+          visible={isDateModalVisible}
+          onClose={() => setIsDateModalVisible(false)}
+          onDateSelect={(date) => {
+            setValue("transactionDate", date, {
+              shouldValidate: true,
+              shouldDirty: true,
+            });
+          }}
+          initialDate={selectedDate}
+        />
       </View>
     </ScrollView>
   );

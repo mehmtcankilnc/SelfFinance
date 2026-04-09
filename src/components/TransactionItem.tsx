@@ -50,7 +50,7 @@ export default function TransactionItem({ transaction }: Props) {
               fontSize: 10,
               color: "#9CA3AF",
             }}
-          >{`${transaction.category} • ${transaction.date}`}</Text>
+          >{`${transaction.category} • ${new Date(transaction.date).toLocaleDateString("tr-TR")}`}</Text>
         </View>
       </View>
       <Text
