@@ -156,7 +156,7 @@ export default function AnalyticsScreen() {
       </View>
       {/** Charts */}
       <View style={{ padding: wp(6) }}>
-        <PieChart type="income" />
+        <PieChart type="expense" />
       </View>
     </View>
   );
