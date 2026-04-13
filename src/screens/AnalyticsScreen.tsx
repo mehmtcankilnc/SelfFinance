@@ -9,6 +9,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useProfile } from "../store/useProfile";
 import { avatarData } from "../data/avatarData";
 import { useTransactions } from "../store/useTransactions";
+import PieChart from "../components/charts/PieChart";
 
 export default function AnalyticsScreen() {
   const navigation = useNavigation();
@@ -153,7 +154,10 @@ export default function AnalyticsScreen() {
           </Text>
         </View>
       </View>
-      {/** Graphs */}
+      {/** Charts */}
+      <View style={{ padding: wp(6) }}>
+        <PieChart type="income" />
+      </View>
     </View>
   );
 }

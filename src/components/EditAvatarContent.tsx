@@ -45,7 +45,7 @@ export default function EditAvatarContent() {
         {avatarData.map((item) => (
           <Pressable
             key={item.id}
-            onPress={() => setAvatar(item.image)}
+            onPress={() => setAvatar(item.id)}
             style={{ width: wp(15), height: wp(15) }}
           >
             <Image

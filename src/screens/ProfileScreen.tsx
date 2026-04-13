@@ -87,15 +87,15 @@ export default function ProfileScreen() {
           </Text>
           <CustomDropdown
             dropdownData={[
-              { value: 1, text: "USD ($)" },
-              { value: 2, text: "EUR (€)" },
-              { value: 3, text: "JPY (¥)" },
-              { value: 4, text: "GBP (£)" },
-              { value: 5, text: "TRY (₺)" },
+              { id: 1, title: "USD ($)" },
+              { id: 2, title: "EUR (€)" },
+              { id: 3, title: "JPY (¥)" },
+              { id: 4, title: "GBP (£)" },
+              { id: 5, title: "TRY (₺)" },
             ]}
-            item={currency}
+            selectedTitle={currency}
             placeholder="Choose"
-            onSelect={(curr) => setCurrency(curr)}
+            onSelect={(curr) => setCurrency(curr.title)}
           />
         </View>
       </View>

@@ -48,9 +48,14 @@ export default function TransactionItem({ transaction }: Props) {
             style={{
               fontFamily: "OpenSans-Regular",
               fontSize: 10,
-              color: "#9CA3AF",
+              color: transaction.category.colorCode,
             }}
-          >{`${transaction.category} • ${new Date(transaction.date).toLocaleDateString("tr-TR")}`}</Text>
+          >
+            {`${transaction.category.title} • `}
+            <Text style={{ color: "#9CA3AF" }}>
+              {new Date(transaction.date).toLocaleDateString("tr-TR")}
+            </Text>
+          </Text>
         </View>
       </View>
       <Text

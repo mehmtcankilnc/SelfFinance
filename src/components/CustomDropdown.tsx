@@ -9,30 +9,28 @@ import { DropdownItem } from "../types/types";
 import { ScrollView } from "react-native-gesture-handler";
 import { useDropdown } from "../hooks/useDropdown";
 
-type Props = {
-  dropdownData: DropdownItem[];
+interface CustomDropdownProps<T extends DropdownItem> {
+  dropdownData: T[];
   icon?: ReactNode;
   placeholder?: string;
-  onSelect?: (item: string) => void;
-  item?: string;
-};
+  onSelect?: (item: T) => void;
+  selectedTitle?: string;
+}
 
-export default function CustomDropdown({
+export default function CustomDropdown<T extends DropdownItem>({
   dropdownData,
   icon,
   placeholder,
   onSelect,
-  item,
-}: Props) {
+  selectedTitle,
+}: CustomDropdownProps<T>) {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<string | undefined>(item);
 
   const ref = useRef<View>(null);
 
   const { openDropdown, closeDropdown } = useDropdown();
 
-  const handleSelect = (item: string) => {
-    setSelectedItem(item);
+  const handleSelect = (item: T) => {
     if (onSelect) onSelect(item);
   };
 
@@ -54,9 +52,9 @@ export default function CustomDropdown({
       >
         {dropdownData.map((item, index) => (
           <Pressable
-            key={item.value}
+            key={item.id}
             onPress={() => {
-              handleSelect(item.text);
+              handleSelect(item);
               closeDropdown();
               setIsOpen(false);
             }}
@@ -66,7 +64,7 @@ export default function CustomDropdown({
               borderBottomWidth: index === dropdownData.length - 1 ? 0 : 1,
               borderBottomColor: "#F3F4F6",
               backgroundColor:
-                selectedItem && selectedItem === item.text
+                selectedTitle && selectedTitle === item.title
                   ? "#FDF1E7"
                   : "transparent",
             }}
@@ -74,13 +72,13 @@ export default function CustomDropdown({
             <Text
               style={{
                 color:
-                  selectedItem && selectedItem === item.text
+                  selectedTitle && selectedTitle === item.title
                     ? "#C67C4E"
                     : "#374151",
                 fontFamily: "OpenSans-Regular",
               }}
             >
-              {item.text}
+              {item.title}
             </Text>
           </Pressable>
         ))}
@@ -133,11 +131,11 @@ export default function CustomDropdown({
         {icon && <View className="absolute top-3 left-2">{icon}</View>}
         <Text
           style={{
-            color: selectedItem ? "#111827" : "#9CA3AF",
+            color: selectedTitle ? "#111827" : "#9CA3AF",
             fontFamily: "OpenSans-Regular",
           }}
         >
-          {selectedItem ? selectedItem : placeholder}
+          {selectedTitle ? selectedTitle : placeholder}
         </Text>
         <SmoothIcon
           name={isOpen ? "up-chevron" : "down-chevron"}

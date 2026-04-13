@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { DropdownItem } from "../types/types";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { zustandStorage } from "../utilities/storage";
 

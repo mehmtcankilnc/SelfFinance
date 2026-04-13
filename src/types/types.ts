@@ -4,17 +4,21 @@ export interface Transaction {
   id: number;
   type: "expense" | "income";
   title: string;
-  category: string;
+  category: Category;
   date: Date;
   amount: string;
 }
 
 export interface DropdownItem {
-  text: string;
-  value: number;
+  title: string;
+  id: number;
 }
 
 export interface Avatar {
   id: number;
   image: ImageSourcePropType;
 }
+
+export type Category = DropdownItem & {
+  colorCode: string;
+};

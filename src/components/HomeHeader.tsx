@@ -234,13 +234,13 @@ export default function HomeHeader() {
           </Text>
           <CustomDropdown
             dropdownData={[
-              { text: "All Categories", value: 1 },
-              { text: "deneme", value: 2 },
-              { text: "deneme2", value: 3 },
+              { title: "All Categories", id: 1 },
+              { title: "deneme", id: 2 },
+              { title: "deneme2", id: 3 },
             ]}
             placeholder="Choose a Category"
-            item={filterCategory}
-            onSelect={(cat) => setFilterCategory(cat)}
+            selectedTitle={filterCategory}
+            onSelect={(cat) => setFilterCategory(cat.title)}
           />
         </View>
         {/** Date Range */}

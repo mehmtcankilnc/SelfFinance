@@ -14,10 +14,17 @@ import { z } from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DatePickerModal from "./DatePickerModal";
+import { expenseCategories, incomeCategories } from "../data/categoryData";
+
+const categorySchema = z.object({
+  id: z.number().gt(0, "*Required Field"),
+  title: z.string().min(1, "*Required Field"),
+  colorCode: z.string(),
+});
 
 const addTransactionSchema = z.object({
   transactionName: z.string().min(1, "*Required Field"),
-  transactionCategory: z.string().min(1, "*Required Field"),
+  transactionCategory: categorySchema,
   transactionAmount: z.string().min(1, "*Required Field"),
   transactionDate: z.date({
     error: (issue) =>
@@ -40,13 +47,14 @@ export default function AddTransactionContent() {
     resolver: zodResolver(addTransactionSchema),
     defaultValues: {
       transactionName: "",
-      transactionCategory: "",
+      transactionCategory: { id: 0, title: "", colorCode: "" },
       transactionAmount: "",
       transactionDate: new Date(),
     },
   });
 
   const selectedDate = watch("transactionDate");
+  const selectedCat = watch("transactionCategory");
 
   const [isExpense, setIsExpense] = useState(true);
   const [isDateModalVisible, setIsDateModalVisible] = useState(false);
@@ -136,23 +144,21 @@ export default function AddTransactionContent() {
             Category{" "}
             {errors.transactionCategory && (
               <Text className="color-[#e74c3c]">
-                {errors.transactionCategory.message}
+                {errors.transactionCategory.id?.message ||
+                  errors.transactionCategory.title?.message}
               </Text>
             )}
           </Text>
-          <Controller
-            control={control}
-            name="transactionCategory"
-            render={({ field: { onChange, value } }) => (
-              <CustomDropdown
-                dropdownData={[
-                  { text: "deneme", value: 1 },
-                  { text: "deneme2", value: 2 },
-                ]}
-                placeholder="Choose a Category"
-                onSelect={onChange}
-              />
-            )}
+          <CustomDropdown
+            dropdownData={isExpense ? expenseCategories : incomeCategories}
+            placeholder="Choose a Category"
+            onSelect={(cat) =>
+              setValue("transactionCategory", cat, {
+                shouldValidate: true,
+                shouldDirty: true,
+              })
+            }
+            selectedTitle={selectedCat.title}
           />
         </View>
         {/** Transaction Amount */}
@@ -191,7 +197,16 @@ export default function AddTransactionContent() {
           </Text>
           <View className="flex-row" style={{ gap: wp(3) }}>
             <Pressable
-              onPress={() => !isExpense && setIsExpense(true)}
+              onPress={() => {
+                if (!isExpense) {
+                  setIsExpense(true);
+                  setValue("transactionCategory", {
+                    id: 0,
+                    title: "",
+                    colorCode: "",
+                  });
+                }
+              }}
               className="flex-1 rounded-2xl items-center justify-center"
               style={{
                 height: hp(6),
@@ -211,7 +226,16 @@ export default function AddTransactionContent() {
               </Text>
             </Pressable>
             <Pressable
-              onPress={() => isExpense && setIsExpense(false)}
+              onPress={() => {
+                if (isExpense) {
+                  setIsExpense(false);
+                  setValue("transactionCategory", {
+                    id: 0,
+                    title: "",
+                    colorCode: "",
+                  });
+                }
+              }}
               className="flex-1 rounded-2xl items-center justify-center"
               style={{
                 height: hp(6),
