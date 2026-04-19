@@ -1,4 +1,5 @@
-import { View, Text, ScrollView, Pressable } from "react-native";
+import { View, Text, Pressable } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import React, { useState } from "react";
 import {
   widthPercentageToDP as wp,
@@ -74,13 +75,16 @@ export default function AddTransactionContent() {
   };
 
   return (
-    <ScrollView
+    <KeyboardAwareScrollView
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{ paddingBottom: wp(8) }}
       keyboardShouldPersistTaps="handled"
       bounces={false}
+      enableOnAndroid={true}
+      enableAutomaticScroll={true}
+      extraScrollHeight={20}
     >
-      {/** Content Title & Header */}
+      {/** Title & Header */}
       <View
         className="flex-row items-center justify-between border-b border-b-[#EBEBEB]"
         style={{ paddingBottom: wp(2), paddingHorizontal: wp(6) }}
@@ -102,6 +106,7 @@ export default function AddTransactionContent() {
           color={"#242424"}
         />
       </View>
+      {/** Content */}
       <View style={{ paddingHorizontal: wp(6), gap: wp(3), paddingTop: wp(2) }}>
         {/** Transaction Name */}
         <View style={{ gap: wp(1) }}>
@@ -343,6 +348,6 @@ export default function AddTransactionContent() {
           initialDate={selectedDate}
         />
       </View>
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 }

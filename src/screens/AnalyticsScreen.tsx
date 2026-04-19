@@ -1,5 +1,5 @@
-import { View, Text, Pressable, Image } from "react-native";
-import React from "react";
+import { View, Text, Pressable, Image, ScrollView } from "react-native";
+import React, { useState } from "react";
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -10,11 +10,14 @@ import { useProfile } from "../store/useProfile";
 import { avatarData } from "../data/avatarData";
 import { useTransactions } from "../store/useTransactions";
 import PieChart from "../components/charts/PieChart";
+import AnimatedSegmentedButtons from "../components/AnimatedSegmentedButtons";
 
 export default function AnalyticsScreen() {
   const navigation = useNavigation();
   const { avatar, currency } = useProfile();
   const { totalIncome, totalExpense, balance } = useTransactions();
+
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
   return (
     <View className="flex-1 bg-backgroundColor">
@@ -155,8 +158,28 @@ export default function AnalyticsScreen() {
         </View>
       </View>
       {/** Charts */}
-      <View style={{ padding: wp(6) }}>
-        <PieChart type="expense" />
+      <View className="flex-1" style={{ paddingHorizontal: wp(6), gap: wp(3) }}>
+        {/** Segmented Buttons */}
+        <AnimatedSegmentedButtons
+          titles={["Income", "Expense"]}
+          onChange={(index) =>
+            index !== selectedIndex && setSelectedIndex(index)
+          }
+        />
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: wp(8), gap: wp(3) }}
+          keyboardShouldPersistTaps="handled"
+          bounces={false}
+        >
+          {/** Pie Chart */}
+          <View
+            className="bg-white rounded-2xl"
+            style={{ padding: wp(3), gap: wp(3) }}
+          >
+            <PieChart type={selectedIndex === 0 ? "income" : "expense"} />
+          </View>
+        </ScrollView>
       </View>
     </View>
   );

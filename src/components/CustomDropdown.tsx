@@ -8,6 +8,35 @@ import { SmoothIcon } from "smooth-icon";
 import { DropdownItem } from "../types/types";
 import { ScrollView } from "react-native-gesture-handler";
 import { useDropdown } from "../hooks/useDropdown";
+import Animated, {
+  EntryAnimationsValues,
+  ExitAnimationsValues,
+  withTiming,
+} from "react-native-reanimated";
+
+const SlideDownEnter = (values: EntryAnimationsValues) => {
+  "worklet";
+  return {
+    initialValues: {
+      height: 0,
+    },
+    animations: {
+      height: withTiming(values.targetHeight, { duration: 200 }),
+    },
+  };
+};
+
+const SlideUpExit = (values: ExitAnimationsValues) => {
+  "worklet";
+  return {
+    initialValues: {
+      height: values.currentHeight,
+    },
+    animations: {
+      height: withTiming(0, { duration: 200 }),
+    },
+  };
+};
 
 interface CustomDropdownProps<T extends DropdownItem> {
   dropdownData: T[];
@@ -35,7 +64,9 @@ export default function CustomDropdown<T extends DropdownItem>({
   };
 
   const renderDropdown = () => (
-    <View
+    <Animated.View
+      entering={SlideDownEnter}
+      exiting={SlideUpExit}
       style={{
         backgroundColor: "#FFFFFF",
         borderBottomLeftRadius: 16,
@@ -83,7 +114,7 @@ export default function CustomDropdown<T extends DropdownItem>({
           </Pressable>
         ))}
       </ScrollView>
-    </View>
+    </Animated.View>
   );
 
   const toggleDropdown = () => {
@@ -102,6 +133,7 @@ export default function CustomDropdown<T extends DropdownItem>({
           height,
         },
         content: renderDropdown(),
+        onClose: () => setIsOpen(false),
       });
 
       setIsOpen(true);

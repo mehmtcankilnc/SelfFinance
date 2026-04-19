@@ -1,5 +1,12 @@
 /* eslint-disable react-native/no-inline-styles */
-import { Pressable, useWindowDimensions, BackHandler } from "react-native";
+import {
+  Pressable,
+  useWindowDimensions,
+  BackHandler,
+  KeyboardAvoidingView,
+  Platform,
+  View,
+} from "react-native";
 import React, { useEffect, useState, useCallback } from "react";
 import Animated, {
   Extrapolation,
@@ -8,11 +15,10 @@ import Animated, {
   useSharedValue,
   withSpring,
   withTiming,
-  useAnimatedKeyboard,
 } from "react-native-reanimated";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { scheduleOnRN } from "react-native-worklets";
-import { useBottomSheet } from "../store/useBottomSheet";
+import { Content, useBottomSheet } from "../store/useBottomSheet";
 import AddTransactionContent from "./AddTransactionContent";
 import EditAvatarContent from "./EditAvatarContent";
 
@@ -28,14 +34,14 @@ const TIMING_CONFIG = {
   duration: 250,
 };
 
-const renderContent = (content: any) => {
-  const { type, props } = content;
+const renderContent = (content: Content) => {
+  const { type } = content;
 
   switch (type) {
     case "ADD_SCREEN":
-      return <AddTransactionContent {...props} />;
+      return <AddTransactionContent />;
     case "EDIT_AVATAR":
-      return <EditAvatarContent {...props} />;
+      return <EditAvatarContent />;
     default:
       return null;
   }
@@ -50,8 +56,6 @@ export default function GlobalBottomSheet() {
   const SNAP_POINT = SCREEN_HEIGHT * 0.3;
   const gestureContentY = useSharedValue(0);
   const translateY = useSharedValue(SCREEN_HEIGHT);
-
-  const keyboard = useAnimatedKeyboard();
 
   const [isSheetVisible, setIsSheetVisible] = useState(false);
 
@@ -132,7 +136,7 @@ export default function GlobalBottomSheet() {
 
   const rSheetStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateY: translateY.value - keyboard.height.value }],
+      transform: [{ translateY: translateY.value }],
     };
   });
 
@@ -154,16 +158,26 @@ export default function GlobalBottomSheet() {
         className="absolute inset-0 bg-black/50"
         style={rBackdropStyle}
       />
-      <GestureDetector gesture={panGesture}>
-        <Animated.View
-          onStartShouldSetResponder={() => true}
-          style={rSheetStyle}
-          className="absolute bottom-0 w-full bg-backgroundColor rounded-t-2xl shadow-lg md:max-w-lg md:mx-auto md:bottom-4 md:rounded-xl"
-        >
-          <Animated.View className="w-16 h-1 bg-action rounded-full self-center my-3" />
-          {content ? renderContent(content) : null}
-        </Animated.View>
-      </GestureDetector>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        className="absolute inset-0"
+        pointerEvents="box-none"
+      >
+        <View className="flex-1 justify-end" pointerEvents="box-none">
+          <Animated.View
+            onStartShouldSetResponder={() => true}
+            style={[rSheetStyle, { maxHeight: "100%" }]}
+            className="w-full bg-backgroundColor rounded-t-2xl shadow-lg md:max-w-lg md:mx-auto md:bottom-4 md:rounded-xl"
+          >
+            <GestureDetector gesture={panGesture}>
+              <Animated.View className="w-full pt-3 pb-4 items-center bg-transparent">
+                <View className="w-16 h-1 bg-action rounded-full" />
+              </Animated.View>
+            </GestureDetector>
+            {content ? renderContent(content) : null}
+          </Animated.View>
+        </View>
+      </KeyboardAvoidingView>
     </Animated.View>
   );
 }

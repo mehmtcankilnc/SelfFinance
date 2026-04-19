@@ -1,14 +1,25 @@
 import { create } from "zustand";
 
-export type BottomSheetContentType = "ADD_SCREEN" | "EDIT_AVATAR";
+export type BottomSheetPropsMap = {
+  ADD_SCREEN: undefined;
+  EDIT_AVATAR: undefined;
+};
+
+export type BottomSheetContentType = keyof BottomSheetPropsMap;
+
+export type Content<T extends BottomSheetContentType = BottomSheetContentType> =
+  {
+    type: T | null;
+    props?: BottomSheetPropsMap[T];
+  };
 
 interface BottomSheetState {
   isOpen: boolean;
-  content: {
-    type: BottomSheetContentType | null;
-    props?: any;
-  } | null;
-  openBottomSheet: (type: BottomSheetContentType, props?: any) => void;
+  content: Content | null;
+  openBottomSheet: <T extends BottomSheetContentType>(
+    type: T,
+    props?: BottomSheetPropsMap[T],
+  ) => void;
   closeBottomSheet: () => void;
   clearBottomSheetContent: () => void;
 }
@@ -16,10 +27,10 @@ interface BottomSheetState {
 export const useBottomSheet = create<BottomSheetState>((set) => ({
   isOpen: false,
   content: null,
-  openBottomSheet: (type, props = {}) =>
+  openBottomSheet: (type, props) =>
     set({
       isOpen: true,
-      content: { type, props },
+      content: { type, props } as Content,
     }),
   closeBottomSheet: () =>
     set({

@@ -25,8 +25,10 @@ export default function PieChart({ type }: Props) {
 
   const totalOfSelectedType = type === "expense" ? totalExpense : totalIncome;
 
-  const pieChartData = useMemo<PieChartData[]>(() => {
+  const pieChartData = useMemo<PieChartData[] | null>(() => {
     const transactionsByType = allTransactions.filter((tr) => tr.type === type);
+
+    if (transactionsByType.length <= 0) return null;
 
     const groupedData = transactionsByType.reduce(
       (acc, tr) => {
@@ -61,6 +63,30 @@ export default function PieChart({ type }: Props) {
       };
     });
   }, [allTransactions, type, totalOfSelectedType]);
+
+  if (pieChartData === null) {
+    return (
+      <View className="justify-center items-center" style={{ gap: wp(3) }}>
+        <Text style={{ fontSize: 64 }}>📊</Text>
+        <Text
+          className="text-textColor"
+          style={{ fontFamily: "Poppins-SemiBold", fontSize: 20 }}
+        >
+          No Data Yet
+        </Text>
+        <Text
+          className="text-center"
+          style={{
+            fontFamily: "Poppins-SemiBold",
+            fontSize: 12,
+            color: "#9CA3AF",
+          }}
+        >
+          Add some transactions to see your financial insights and charts!
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <View className="flex-row w-full" style={{ gap: wp(3) }}>
@@ -115,7 +141,7 @@ export default function PieChart({ type }: Props) {
                 backgroundColor: data.category.colorCode,
               }}
             />
-            <Text style={{ fontSize: 10, fontFamily: "OpenSans-Regular" }}>
+            <Text style={{ fontSize: 9, fontFamily: "OpenSans-Regular" }}>
               {data.category.title}
             </Text>
           </View>

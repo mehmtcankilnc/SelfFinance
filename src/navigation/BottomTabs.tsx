@@ -6,6 +6,7 @@ import { Text, TouchableOpacity, View } from "react-native";
 import CenterTabBg from "../components/CenterTabBg";
 import EmptyScreen from "../screens/EmptyScreen";
 import { useBottomSheet } from "../store/useBottomSheet";
+import { ReactNode } from "react";
 
 const Tab = createBottomTabNavigator();
 
@@ -13,7 +14,7 @@ const CustomTabButton = ({
   children,
   onPress,
 }: {
-  children: any;
+  children: ReactNode;
   onPress: () => void;
 }) => (
   <TouchableOpacity

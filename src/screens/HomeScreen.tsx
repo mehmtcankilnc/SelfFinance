@@ -1,5 +1,5 @@
 import { View, Text, FlatList } from "react-native";
-import React from "react";
+import React, { useMemo } from "react";
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -8,22 +8,37 @@ import HomeHeader from "../components/HomeHeader";
 import TransactionItem from "../components/TransactionItem";
 import { useTransactions } from "../store/useTransactions";
 
+const ITEM_HEIGHT = wp(20);
+const SCREEN_HEIGHT = hp(100);
+const ITEMS_PER_SCREEN = Math.ceil(SCREEN_HEIGHT / ITEM_HEIGHT);
+
 export default function HomeScreen() {
   const { transactions } = useTransactions();
+
+  const orderedTransactions = useMemo(() => {
+    if (!transactions || transactions.length === 0) return [];
+
+    return [...transactions].sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+    );
+  }, [transactions]);
 
   return (
     <View className="flex-1 bg-backgroundColor">
       <HomeHeader />
       <View style={{ flex: 1, padding: wp(6), gap: wp(5) }}>
-        {transactions.length > 0 ? (
+        {orderedTransactions.length > 0 ? (
           <FlatList
-            data={transactions}
+            data={orderedTransactions}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item: transaction }) => (
               <TransactionItem key={transaction.id} transaction={transaction} />
             )}
             contentContainerStyle={{ gap: wp(5) }}
             showsVerticalScrollIndicator={false}
+            initialNumToRender={ITEMS_PER_SCREEN + 2}
+            windowSize={7}
+            maxToRenderPerBatch={ITEMS_PER_SCREEN}
           />
         ) : (
           <View

@@ -16,7 +16,7 @@ export default function TransactionItem({ transaction }: Props) {
   return (
     <View
       className="w-full flex-row items-center justify-between bg-white rounded-3xl"
-      style={{ padding: wp(5), gap: wp(2) }}
+      style={{ padding: wp(5), gap: wp(2), height: wp(20) }}
     >
       <View className="flex-1 flex-row items-center" style={{ gap: wp(2) }}>
         <View

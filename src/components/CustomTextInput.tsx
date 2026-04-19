@@ -1,17 +1,17 @@
-import { View, TextInput } from "react-native";
+import { View, TextInput, TextInputProps } from "react-native";
 import React, { ReactNode, useState } from "react";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 
-type Props = {
+interface Props extends TextInputProps {
   text: string;
-  onTextChange: (val: string) => void;
+  onTextChange: (text: string) => void;
   placeholder: string;
   icon?: ReactNode;
   type?: "numeric" | "default";
-};
+}
 
 export default function CustomTextInput({
   text,
