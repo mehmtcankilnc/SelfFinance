@@ -7,13 +7,19 @@ import CustomTextInput from "../components/CustomTextInput";
 import CustomDropdown from "../components/CustomDropdown";
 import { useBottomSheet } from "../store/useBottomSheet";
 import { useProfile } from "../store/useProfile";
-import { avatarData } from "../data/avatarData";
+import { avatarData } from "../data/profileData";
 
 export default function ProfileScreen() {
   const navigation = useNavigation();
   const { openBottomSheet } = useBottomSheet();
-  const { displayName, setDisplayName, currency, setCurrency, avatar } =
-    useProfile();
+  const {
+    displayName,
+    setDisplayName,
+    currency,
+    setCurrency,
+    avatar,
+    profileColor,
+  } = useProfile();
 
   return (
     <View className="flex-1 bg-backgroundColor">
@@ -45,8 +51,13 @@ export default function ProfileScreen() {
       </View>
       {/** Avatar */}
       <View
-        className="bg-[#79A8FF] rounded-full self-center items-center justify-center"
-        style={{ width: wp(40), height: wp(40), marginTop: wp(10) }}
+        className="rounded-full self-center items-center justify-center"
+        style={{
+          width: wp(40),
+          height: wp(40),
+          marginTop: wp(10),
+          backgroundColor: profileColor,
+        }}
       >
         <Image
           source={avatarData.find((av) => av.id === avatar)?.image}

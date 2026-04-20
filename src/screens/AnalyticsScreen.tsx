@@ -7,14 +7,14 @@ import {
 import { SmoothIcon } from "smooth-icon";
 import { useNavigation } from "@react-navigation/native";
 import { useProfile } from "../store/useProfile";
-import { avatarData } from "../data/avatarData";
+import { avatarData } from "../data/profileData";
 import { useTransactions } from "../store/useTransactions";
 import PieChart from "../components/charts/PieChart";
 import AnimatedSegmentedButtons from "../components/AnimatedSegmentedButtons";
 
 export default function AnalyticsScreen() {
   const navigation = useNavigation();
-  const { avatar, currency } = useProfile();
+  const { avatar, currency, profileColor } = useProfile();
   const { totalIncome, totalExpense, balance } = useTransactions();
 
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
@@ -51,8 +51,13 @@ export default function AnalyticsScreen() {
         {/** Avatar */}
         <Pressable
           onPress={() => navigation.getParent()?.navigate("Profile")}
-          className="bg-[#79A8FF] items-center justify-center"
-          style={{ width: wp(16), height: wp(16), borderRadius: wp(6) }}
+          className="items-center justify-center"
+          style={{
+            width: wp(16),
+            height: wp(16),
+            borderRadius: wp(6),
+            backgroundColor: profileColor,
+          }}
         >
           <Image
             source={avatarData.find((av) => av.id === avatar)?.image}

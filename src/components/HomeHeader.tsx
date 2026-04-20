@@ -14,14 +14,14 @@ import Animated, {
 } from "react-native-reanimated";
 import { useNavigation } from "@react-navigation/native";
 import { useProfile } from "../store/useProfile";
-import { avatarData } from "../data/avatarData";
+import { avatarData } from "../data/profileData";
 import FilterSection from "./FilterSection";
 
 const HEIGHT_VALUE = hp(35);
 
 export default function HomeHeader() {
   const navigation = useNavigation();
-  const { avatar, displayName } = useProfile();
+  const { avatar, displayName, profileColor } = useProfile();
 
   const [isFilterSectionOpen, setIsFilterSectionOpen] = useState(false);
 
@@ -97,8 +97,13 @@ export default function HomeHeader() {
           {/** Avatar */}
           <Pressable
             onPress={() => navigation.getParent()?.navigate("Profile")}
-            className="bg-[#79A8FF] items-center justify-center"
-            style={{ width: wp(16), height: wp(16), borderRadius: wp(6) }}
+            className="items-center justify-center"
+            style={{
+              width: wp(16),
+              height: wp(16),
+              borderRadius: wp(6),
+              backgroundColor: profileColor,
+            }}
           >
             <Image
               source={avatarData.find((av) => av.id === avatar)?.image}

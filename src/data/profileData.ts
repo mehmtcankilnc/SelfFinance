@@ -1,4 +1,4 @@
-import { Avatar } from "../types/types";
+import { Avatar, ProfileColor } from "../types/types";
 
 export const avatarData: Avatar[] = [
   { id: 1, image: require("../../assets/avatars/avatar1_male.webp") },
@@ -41,4 +41,15 @@ export const avatarData: Avatar[] = [
   { id: 38, image: require("../../assets/avatars/avatar19_female.webp") },
   { id: 39, image: require("../../assets/avatars/avatar20_male.webp") },
   { id: 40, image: require("../../assets/avatars/avatar20_female.webp") },
+];
+
+export const profileColorData: ProfileColor[] = [
+  { id: 1, colorCode: "#8B9DF0" },
+  { id: 2, colorCode: "#F2A1C6" },
+  { id: 3, colorCode: "#FFB5A7" },
+  { id: 4, colorCode: "#F6DF7F" },
+  { id: 5, colorCode: "#C1D5C0" },
+  { id: 6, colorCode: "#98DDCA" },
+  { id: 7, colorCode: "#B9CCED" },
+  { id: 8, colorCode: "#E3D5CA" },
 ];

@@ -8,6 +8,7 @@ import HomeHeader from "../components/HomeHeader";
 import TransactionItem from "../components/TransactionItem";
 import { useTransactions } from "../store/useTransactions";
 import { useFilter } from "../store/useFilter";
+import { useDebounce } from "../hooks/useDebounce";
 
 const ITEM_HEIGHT = wp(20);
 const SCREEN_HEIGHT = hp(100);
@@ -15,14 +16,30 @@ const ITEMS_PER_SCREEN = Math.ceil(SCREEN_HEIGHT / ITEM_HEIGHT);
 
 export default function HomeScreen() {
   const { transactions } = useTransactions();
-  const { currentTypeFilter, currentCategoryFilter, currentDateFilter } =
-    useFilter();
+  const {
+    searchText,
+    currentTypeFilter,
+    currentCategoryFilter,
+    currentDateFilter,
+  } = useFilter();
+
+  const debouncedSearchText = useDebounce(searchText, 300);
 
   const filteredTransactions = useMemo(() => {
     if (!transactions || transactions.length === 0) return [];
 
     // Filtering
     const filtered = transactions.filter((transaction) => {
+      // Search Text Filtering
+      if (debouncedSearchText !== "") {
+        const lowerSearchText = searchText.toLowerCase();
+        const lowerTitle = transaction.title.toLowerCase();
+
+        if (!lowerTitle.includes(lowerSearchText)) {
+          return false;
+        }
+      }
+
       // Type Filtering
       if (
         currentTypeFilter !== "all" &&
@@ -73,6 +90,7 @@ export default function HomeScreen() {
     );
   }, [
     transactions,
+    debouncedSearchText,
     currentTypeFilter,
     currentCategoryFilter,
     currentDateFilter,

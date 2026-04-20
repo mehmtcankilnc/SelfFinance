@@ -21,6 +21,11 @@ export interface Avatar {
   image: ImageSourcePropType;
 }
 
+export interface ProfileColor {
+  id: number;
+  colorCode: string;
+}
+
 export type Category = DropdownItem & {
   colorCode: string;
 };
