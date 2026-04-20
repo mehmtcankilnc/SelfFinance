@@ -2,11 +2,11 @@ import { View, Text } from "react-native";
 import React, { useMemo } from "react";
 import { useTransactions } from "../../store/useTransactions";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
-import { Category } from "../../types/types";
+import { Category, TransactionType } from "../../types/types";
 import Svg, { Circle, G } from "react-native-svg";
 
 type Props = {
-  type: "income" | "expense";
+  type: TransactionType;
 };
 
 type PieChartData = {

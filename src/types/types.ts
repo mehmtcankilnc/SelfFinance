@@ -1,8 +1,10 @@
 import { ImageSourcePropType } from "react-native";
 
+export type TransactionType = "expense" | "income";
+
 export interface Transaction {
   id: number;
-  type: "expense" | "income";
+  type: TransactionType;
   title: string;
   category: Category;
   date: Date;
@@ -22,3 +24,9 @@ export interface Avatar {
 export type Category = DropdownItem & {
   colorCode: string;
 };
+
+export type TypeFilter = "all" | TransactionType;
+
+export type CategoryFilter = "all" | Category;
+
+export type DateFilter = "all" | "today" | "thisWeek" | "thisMonth";

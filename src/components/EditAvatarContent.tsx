@@ -1,5 +1,5 @@
 import { View, Text, ScrollView, Pressable, Image } from "react-native";
-import React, { useState } from "react";
+import React from "react";
 import { useBottomSheet } from "../store/useBottomSheet";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 import { SmoothIcon } from "smooth-icon";

@@ -90,8 +90,7 @@ export default function AnalyticsScreen() {
               color: "#10B981",
             }}
           >
-            {totalIncome}
-            {currency.slice(5, 6)}
+            {totalIncome} {currency.slice(5, 6)}
           </Text>
         </View>
         {/** Expense */}
@@ -121,8 +120,7 @@ export default function AnalyticsScreen() {
               color: "#DC2626",
             }}
           >
-            {totalExpense}
-            {currency.slice(5, 6)}
+            {totalExpense} {currency.slice(5, 6)}
           </Text>
         </View>
         {/** Balance */}
@@ -152,8 +150,7 @@ export default function AnalyticsScreen() {
               color: "#D17C4E",
             }}
           >
-            {balance}
-            {currency.slice(5, 6)}
+            {balance} {currency.slice(5, 6)}
           </Text>
         </View>
       </View>
