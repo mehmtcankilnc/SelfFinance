@@ -4,7 +4,7 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from "react-native-responsive-screen";
-import { SmoothIcon } from "smooth-icon";
+import SmoothIcon from "smooth-icon";
 import { useNavigation } from "@react-navigation/native";
 import { useProfile } from "../store/useProfile";
 import { avatarData } from "../data/profileData";
@@ -77,7 +77,7 @@ export default function AnalyticsScreen() {
             className="bg-[#E8F8F3] items-center justify-center rounded-full"
             style={{ width: 40, height: 40 }}
           >
-            <SmoothIcon name="income" size={32} color="#10B981" />
+            <SmoothIcon name="arrow-ascending" size={32} color="#10B981" />
           </View>
           <Text
             style={{
@@ -107,7 +107,7 @@ export default function AnalyticsScreen() {
             className="bg-[#FCEAEA] items-center justify-center rounded-full"
             style={{ width: 40, height: 40 }}
           >
-            <SmoothIcon name="expense" size={32} color="#DC2626" />
+            <SmoothIcon name="arrow-descending" size={32} color="#DC2626" />
           </View>
           <Text
             style={{

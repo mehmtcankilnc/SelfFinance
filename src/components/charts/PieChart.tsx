@@ -17,11 +17,9 @@ type PieChartData = {
 };
 
 export default function PieChart({ type }: Props) {
-  const {
-    transactions: allTransactions,
-    totalIncome,
-    totalExpense,
-  } = useTransactions();
+  const allTransactions = useTransactions((state) => state.transactions);
+  const totalIncome = useTransactions((state) => state.totalIncome);
+  const totalExpense = useTransactions((state) => state.totalExpense);
 
   const totalOfSelectedType = type === "expense" ? totalExpense : totalIncome;
 

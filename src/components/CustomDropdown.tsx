@@ -4,7 +4,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import { SmoothIcon } from "smooth-icon";
+import SmoothIcon from "smooth-icon";
 import { DropdownItem } from "../types/types";
 import { ScrollView } from "react-native-gesture-handler";
 import { useDropdown } from "../hooks/useDropdown";
@@ -170,7 +170,7 @@ export default function CustomDropdown<T extends DropdownItem>({
           {selectedTitle ? selectedTitle : placeholder}
         </Text>
         <SmoothIcon
-          name={isOpen ? "up-chevron" : "down-chevron"}
+          name={isOpen ? "chevron-up" : "chevron-down"}
           size={20}
           color={isOpen ? "#C67C4E" : "#9CA3AF"}
         />

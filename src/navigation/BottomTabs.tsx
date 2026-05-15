@@ -1,7 +1,7 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "../screens/HomeScreen";
 import AnalyticsScreen from "../screens/AnalyticsScreen";
-import { SmoothIcon } from "smooth-icon";
+import SmoothIcon from "smooth-icon";
 import { Text, TouchableOpacity, View } from "react-native";
 import CenterTabBg from "../components/CenterTabBg";
 import EmptyScreen from "../screens/EmptyScreen";

@@ -5,7 +5,7 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import SearchBar from "./SearchBar";
-import { SmoothIcon } from "smooth-icon";
+import SmoothIcon from "smooth-icon";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -21,7 +21,9 @@ const HEIGHT_VALUE = hp(35);
 
 export default function HomeHeader() {
   const navigation = useNavigation();
-  const { avatar, displayName, profileColor } = useProfile();
+  const avatar = useProfile((state) => state?.avatar ?? 5);
+  const displayName = useProfile((state) => state?.displayName ?? "Guest");
+  const profileColor = useProfile((state) => state?.profileColor ?? "#8B9DF0");
 
   const [isFilterSectionOpen, setIsFilterSectionOpen] = useState(false);
 
@@ -120,7 +122,7 @@ export default function HomeHeader() {
             style={{ padding: wp(2) }}
           >
             <SmoothIcon
-              name={isFilterSectionOpen ? "close" : "filter"}
+              name={isFilterSectionOpen ? "close" : "filter3-outlined"}
               size={24}
               color={"#FFFFFF"}
             />

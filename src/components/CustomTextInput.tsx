@@ -19,6 +19,7 @@ export default function CustomTextInput({
   placeholder,
   icon,
   type = "default",
+  ...rest
 }: Props) {
   const [isFocused, setIsFocused] = useState(false);
 
@@ -40,6 +41,7 @@ export default function CustomTextInput({
           borderColor: isFocused ? "#C67C4E" : "#E5E7EB",
           fontFamily: "OpenSans-Regular",
         }}
+        {...rest}
         cursorColor={"#111827"}
         keyboardType={type}
       />

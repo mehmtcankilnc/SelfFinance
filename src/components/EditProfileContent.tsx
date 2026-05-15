@@ -2,13 +2,16 @@ import { View, Text, ScrollView, Pressable, Image } from "react-native";
 import React from "react";
 import { useBottomSheet } from "../store/useBottomSheet";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
-import { SmoothIcon } from "smooth-icon";
+import SmoothIcon from "smooth-icon";
 import { avatarData, profileColorData } from "../data/profileData";
 import { useProfile } from "../store/useProfile";
 
 export default function EditProfileContent() {
-  const { closeBottomSheet } = useBottomSheet();
-  const { avatar, profileColor, setAvatar, setProfileColor } = useProfile();
+  const closeBottomSheet = useBottomSheet((state) => state.closeBottomSheet);
+  const avatar = useProfile((state) => state?.avatar ?? 5);
+  const profileColor = useProfile((state) => state?.profileColor ?? "#8B9DF0");
+  const setAvatar = useProfile((state) => state?.setAvatar);
+  const setProfileColor = useProfile((state) => state?.setProfileColor);
 
   return (
     <ScrollView
@@ -60,7 +63,7 @@ export default function EditProfileContent() {
                 onPress={() => setProfileColor(item.colorCode)}
               >
                 {profileColor === item.colorCode && (
-                  <SmoothIcon name="confirm" size={24} color={"#111827"} />
+                  <SmoothIcon name="check" size={24} color={"#111827"} />
                 )}
               </Pressable>
             ))}
@@ -91,7 +94,7 @@ export default function EditProfileContent() {
                 />
                 {avatar === item.image && (
                   <View className="absolute bottom-0 right-0 bg-action rounded-full">
-                    <SmoothIcon name="confirm" size={14} color={"#D8D8D8"} />
+                    <SmoothIcon name="check" size={14} color={"#D8D8D8"} />
                   </View>
                 )}
               </Pressable>

@@ -2,7 +2,7 @@ import { View, Text } from "react-native";
 import React from "react";
 import { Transaction } from "../types/types";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
-import { SmoothIcon } from "smooth-icon";
+import SmoothIcon from "smooth-icon";
 import { useProfile } from "../store/useProfile";
 
 type Props = {
@@ -11,7 +11,7 @@ type Props = {
 
 export default function TransactionItem({ transaction }: Props) {
   const isExpense = transaction.type === "expense";
-  const { currency } = useProfile();
+  const currency = useProfile((state) => state?.currency ?? "USD ($)");
 
   return (
     <View
@@ -27,7 +27,7 @@ export default function TransactionItem({ transaction }: Props) {
           }}
         >
           <SmoothIcon
-            name={isExpense ? "expense" : "income"}
+            name={isExpense ? "arrow-descending" : "arrow-ascending"}
             size={24}
             color={isExpense ? "#DC2626" : "#10B981"}
           />

@@ -9,14 +9,16 @@ import { useFilter } from "../store/useFilter";
 import { allCategories } from "../data/categoryData";
 
 export default function FilterSection() {
-  const {
-    currentTypeFilter,
-    currentCategoryFilter,
-    currentDateFilter,
-    setCurrentTypeFilter,
-    setCurrentCategoryFilter,
-    setCurrentDateFilter,
-  } = useFilter();
+  const currentTypeFilter = useFilter((state) => state.currentTypeFilter);
+  const currentCategoryFilter = useFilter(
+    (state) => state.currentCategoryFilter,
+  );
+  const currentDateFilter = useFilter((state) => state.currentDateFilter);
+  const setCurrentTypeFilter = useFilter((state) => state.setCurrentTypeFilter);
+  const setCurrentCategoryFilter = useFilter(
+    (state) => state.setCurrentCategoryFilter,
+  );
+  const setCurrentDateFilter = useFilter((state) => state.setCurrentDateFilter);
 
   return (
     <>

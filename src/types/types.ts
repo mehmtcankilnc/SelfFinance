@@ -1,4 +1,6 @@
 import { ImageSourcePropType } from "react-native";
+import z from "zod";
+import { addTransactionSchema } from "../schemas/addTransactionSchema";
 
 export type TransactionType = "expense" | "income";
 
@@ -35,3 +37,5 @@ export type TypeFilter = "all" | TransactionType;
 export type CategoryFilter = "all" | Category;
 
 export type DateFilter = "all" | "today" | "thisWeek" | "thisMonth";
+
+export type TransactionFromValues = z.infer<typeof addTransactionSchema>;

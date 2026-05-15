@@ -1,7 +1,7 @@
 import { View, Text, Image, Pressable } from "react-native";
 import React from "react";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
-import { SmoothIcon } from "smooth-icon";
+import SmoothIcon from "smooth-icon";
 import { useNavigation } from "@react-navigation/native";
 import CustomTextInput from "../components/CustomTextInput";
 import CustomDropdown from "../components/CustomDropdown";
@@ -34,7 +34,7 @@ export default function ProfileScreen() {
             position: "absolute",
             left: wp(3),
           }}
-          name="left-chevron"
+          name="chevron-left"
           size={32}
           color="#D8D8D8"
         />
@@ -69,7 +69,7 @@ export default function ProfileScreen() {
           className="absolute rounded-full bg-headerBg bottom-0 right-0"
           style={{ padding: wp(1.5) }}
         >
-          <SmoothIcon name="edit" size={24} color={"#D8D8D8"} />
+          <SmoothIcon name="edit1-outlined" size={24} color={"#D8D8D8"} />
         </Pressable>
       </View>
       {/** Content */}

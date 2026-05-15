@@ -1,6 +1,6 @@
 import { View, Modal, Dimensions, Pressable, Text } from "react-native";
 import React, { useMemo, useState } from "react";
-import { SmoothIcon } from "smooth-icon";
+import SmoothIcon from "smooth-icon";
 
 interface DatePickerModalProps {
   visible: boolean;
@@ -89,7 +89,7 @@ export default function DatePickerModal({
           {/** Header & Navigation */}
           <View className="flex-row justify-between items-center">
             <Pressable onPress={() => changeMonth(-1)}>
-              <SmoothIcon name="left-chevron" size={24} color={"#242424"} />
+              <SmoothIcon name="chevron-left" size={24} color={"#242424"} />
             </Pressable>
             <Text
               style={{
@@ -101,7 +101,7 @@ export default function DatePickerModal({
               {MONTHS[currentDate.getMonth()]} {currentDate.getFullYear()}
             </Text>
             <Pressable onPress={() => changeMonth(1)}>
-              <SmoothIcon name="right-chevron" size={24} color={"#242424"} />
+              <SmoothIcon name="chevron-right" size={24} color={"#242424"} />
             </Pressable>
           </View>
           {/** Days Row */}

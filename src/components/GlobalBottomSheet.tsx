@@ -48,8 +48,12 @@ const renderContent = (content: Content) => {
 };
 
 export default function GlobalBottomSheet() {
-  const { isOpen, content, closeBottomSheet, clearBottomSheetContent } =
-    useBottomSheet();
+  const isOpen = useBottomSheet((state) => state.isOpen);
+  const content = useBottomSheet((state) => state.content);
+  const closeBottomSheet = useBottomSheet((state) => state.closeBottomSheet);
+  const clearBottomSheetContent = useBottomSheet(
+    (state) => state.clearBottomSheetContent,
+  );
 
   const { height: SCREEN_HEIGHT } = useWindowDimensions();
 

@@ -5,39 +5,22 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import { SmoothIcon } from "smooth-icon";
+import SmoothIcon from "smooth-icon";
 import CustomTextInput from "./CustomTextInput";
 import { useBottomSheet } from "../store/useBottomSheet";
 import CustomDropdown from "./CustomDropdown";
-import { Transaction } from "../types/types";
+import { Transaction, TransactionFromValues } from "../types/types";
 import { useTransactions } from "../store/useTransactions";
-import { z } from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DatePickerModal from "./DatePickerModal";
 import { expenseCategories, incomeCategories } from "../data/categoryData";
-
-const categorySchema = z.object({
-  id: z.number().gt(0, "*Required Field"),
-  title: z.string().min(1, "*Required Field"),
-  colorCode: z.string(),
-});
-
-const addTransactionSchema = z.object({
-  transactionName: z.string().min(1, "*Required Field"),
-  transactionCategory: categorySchema,
-  transactionAmount: z.string().min(1, "*Required Field"),
-  transactionDate: z.date({
-    error: (issue) =>
-      issue.input === undefined ? "*Required Field" : "*Invalid Input",
-  }),
-});
-
-type TransactionFromValues = z.infer<typeof addTransactionSchema>;
+import { addTransactionSchema } from "../schemas/addTransactionSchema";
 
 export default function AddTransactionContent() {
-  const { closeBottomSheet } = useBottomSheet();
-  const { transactions, addTransaction } = useTransactions();
+  const closeBottomSheet = useBottomSheet((state) => state.closeBottomSheet);
+  const transactions = useTransactions((state) => state.transactions);
+  const addTransaction = useTransactions((state) => state.addTransaction);
   const {
     control,
     handleSubmit,
@@ -126,6 +109,7 @@ export default function AddTransactionContent() {
             name={"transactionName"}
             render={({ field: { onChange, value } }) => (
               <CustomTextInput
+                testID="nameInputTest"
                 text={value}
                 onTextChange={onChange}
                 placeholder={"e.g., Youtube Premium"}
@@ -184,6 +168,7 @@ export default function AddTransactionContent() {
             name="transactionAmount"
             render={({ field: { onChange, value } }) => (
               <CustomTextInput
+                testID="amountInputTest"
                 text={value}
                 onTextChange={onChange}
                 placeholder={"0.00"}
@@ -318,6 +303,7 @@ export default function AddTransactionContent() {
           </Pressable>
           {/** Add Button */}
           <Pressable
+            testID="addTransactionButtonTest"
             onPress={handleSubmit(handleAddNewTransaction)}
             className="flex-1 rounded-2xl items-center justify-center bg-action"
             style={{

@@ -1,11 +1,12 @@
 import { View, TextInput } from "react-native";
 import React from "react";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
-import { SmoothIcon } from "smooth-icon";
+import SmoothIcon from "smooth-icon";
 import { useFilter } from "../store/useFilter";
 
 export default function SearchBar() {
-  const { searchText, setSearchText } = useFilter();
+  const searchText = useFilter((state) => state.searchText);
+  const setSearchText = useFilter((state) => state.setSearchText);
 
   return (
     <>
@@ -25,7 +26,7 @@ export default function SearchBar() {
         cursorColor={"#FFFFFF"}
       />
       <View className="absolute left-2">
-        <SmoothIcon name="magnify" size={20} color={"#FFFFFF"} />
+        <SmoothIcon name="magnify-outlined" size={20} color={"#FFFFFF"} />
       </View>
     </>
   );
