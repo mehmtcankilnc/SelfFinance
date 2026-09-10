@@ -1,5 +1,5 @@
-import { View, Text, FlatList } from "react-native";
-import React, { useMemo } from "react";
+import { View, Text, SectionList } from "react-native";
+import React, { useCallback, useMemo } from "react";
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -9,13 +9,17 @@ import TransactionItem from "../components/TransactionItem";
 import { useTransactions } from "../store/useTransactions";
 import { useFilter } from "../store/useFilter";
 import { useDebounce } from "../hooks/useDebounce";
+import { useThemeColors } from "../theme/useThemeColors";
+import { groupBySection } from "../utilities/groupTransactions";
+import { Transaction } from "../types/types";
 
 const ITEM_HEIGHT = wp(20);
 const SCREEN_HEIGHT = hp(100);
 const ITEMS_PER_SCREEN = Math.ceil(SCREEN_HEIGHT / ITEM_HEIGHT);
 
 export default function HomeScreen() {
-  const { transactions } = useTransactions();
+  const { c } = useThemeColors();
+  const transactions = useTransactions((state) => state.transactions);
   const {
     searchText,
     currentTypeFilter,
@@ -28,19 +32,15 @@ export default function HomeScreen() {
   const filteredTransactions = useMemo(() => {
     if (!transactions || transactions.length === 0) return [];
 
-    // Filtering
-    const filtered = transactions.filter((transaction) => {
-      // Search Text Filtering
-      if (debouncedSearchText !== "") {
-        const lowerSearchText = searchText.toLowerCase();
-        const lowerTitle = transaction.title.toLowerCase();
+    const lowerSearchText = debouncedSearchText.toLowerCase();
 
-        if (!lowerTitle.includes(lowerSearchText)) {
+    const filtered = transactions.filter((transaction) => {
+      if (lowerSearchText !== "") {
+        if (!transaction.title.toLowerCase().includes(lowerSearchText)) {
           return false;
         }
       }
 
-      // Type Filtering
       if (
         currentTypeFilter !== "all" &&
         transaction.type !== currentTypeFilter
@@ -48,7 +48,6 @@ export default function HomeScreen() {
         return false;
       }
 
-      // Category Filtering
       if (
         currentCategoryFilter !== "all" &&
         transaction.category.title !== currentCategoryFilter.title
@@ -56,7 +55,6 @@ export default function HomeScreen() {
         return false;
       }
 
-      // Date Filtering
       if (currentDateFilter !== "all") {
         const txDate = new Date(transaction.date);
         const today = new Date();
@@ -96,22 +94,89 @@ export default function HomeScreen() {
     currentDateFilter,
   ]);
 
+  const sections = useMemo(
+    () => groupBySection(filteredTransactions),
+    [filteredTransactions],
+  );
+
+  const renderItem = useCallback(
+    ({ item }: { item: Transaction }) => <TransactionItem transaction={item} />,
+    [],
+  );
+
+  const renderSectionHeader = useCallback(
+    ({
+      section,
+    }: {
+      section: {
+        title: string;
+        month: string;
+        showMonth: boolean;
+        index: number;
+      };
+    }) => (
+      <View
+        style={{
+          backgroundColor: c.background,
+          paddingTop: section.index === 0 ? wp(1) : wp(7),
+          paddingBottom: wp(3),
+        }}
+      >
+        {section.showMonth && (
+          <View
+            className="flex-row items-center"
+            style={{ gap: wp(3), marginBottom: wp(3) }}
+          >
+            <Text
+              style={{
+                fontFamily: "Poppins-SemiBold",
+                fontSize: 17,
+                color: c.textPrimary,
+              }}
+            >
+              {section.month}
+            </Text>
+            <View style={{ flex: 1, height: 1, backgroundColor: c.separator }} />
+          </View>
+        )}
+        <Text
+          style={{
+            fontFamily: "Poppins-Medium",
+            fontSize: 11,
+            letterSpacing: 0.6,
+            textTransform: "uppercase",
+            color: c.textTertiary,
+          }}
+        >
+          {section.title}
+        </Text>
+      </View>
+    ),
+    [c],
+  );
+
+  const keyExtractor = useCallback((item: Transaction) => item.id.toString(), []);
+
   return (
-    <View className="flex-1 bg-backgroundColor">
+    <View className="flex-1" style={{ backgroundColor: c.background }}>
       <HomeHeader />
-      <View style={{ flex: 1, padding: wp(6), gap: wp(5) }}>
+      <View style={{ flex: 1, paddingHorizontal: wp(6) }}>
         {filteredTransactions.length > 0 ? (
-          <FlatList
-            data={filteredTransactions}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item: transaction }) => (
-              <TransactionItem key={transaction.id} transaction={transaction} />
-            )}
-            contentContainerStyle={{ gap: wp(5) }}
+          <SectionList
+            sections={sections}
+            keyExtractor={keyExtractor}
+            renderItem={renderItem}
+            renderSectionHeader={renderSectionHeader}
+            stickySectionHeadersEnabled={false}
             showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingTop: wp(2), paddingBottom: wp(10) }}
+            ItemSeparatorComponent={ItemSeparator}
+            SectionSeparatorComponent={null}
             initialNumToRender={ITEMS_PER_SCREEN + 2}
-            windowSize={7}
             maxToRenderPerBatch={ITEMS_PER_SCREEN}
+            windowSize={7}
+            updateCellsBatchingPeriod={40}
+            removeClippedSubviews
           />
         ) : (
           <View
@@ -120,8 +185,11 @@ export default function HomeScreen() {
           >
             <Text style={{ fontSize: 64 }}>📭</Text>
             <Text
-              className="text-textColor"
-              style={{ fontFamily: "Poppins-SemiBold", fontSize: 20 }}
+              style={{
+                fontFamily: "Poppins-SemiBold",
+                fontSize: 20,
+                color: c.textPrimary,
+              }}
             >
               No Transactions Yet
             </Text>
@@ -130,7 +198,7 @@ export default function HomeScreen() {
               style={{
                 fontFamily: "Poppins-SemiBold",
                 fontSize: 12,
-                color: "#9CA3AF",
+                color: c.textTertiary,
               }}
             >
               Your transaction history is empty. Tap the button below to add
@@ -142,3 +210,5 @@ export default function HomeScreen() {
     </View>
   );
 }
+
+const ItemSeparator = () => <View style={{ height: wp(5) }} />;

@@ -11,20 +11,51 @@ import { avatarData } from "../data/profileData";
 import { useTransactions } from "../store/useTransactions";
 import PieChart from "../components/charts/PieChart";
 import AnimatedSegmentedButtons from "../components/AnimatedSegmentedButtons";
+import { useThemeColors } from "../theme/useThemeColors";
 
 export default function AnalyticsScreen() {
   const navigation = useNavigation();
+  const { c } = useThemeColors();
   const { avatar, currency, profileColor } = useProfile();
   const { totalIncome, totalExpense, balance } = useTransactions();
 
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
+  const stats = [
+    {
+      label: "Income",
+      value: totalIncome,
+      color: c.success,
+      bg: c.successBg,
+      icon: <SmoothIcon name="arrow-ascending" size={32} color={c.success} />,
+    },
+    {
+      label: "Expense",
+      value: totalExpense,
+      color: c.danger,
+      bg: c.dangerBg,
+      icon: <SmoothIcon name="arrow-descending" size={32} color={c.danger} />,
+    },
+    {
+      label: "Balance",
+      value: balance,
+      color: c.action,
+      bg: c.actionSoft,
+      icon: <Text style={{ color: c.action, fontSize: 20 }}>$</Text>,
+    },
+  ];
+
   return (
-    <View className="flex-1 bg-backgroundColor">
+    <View className="flex-1" style={{ backgroundColor: c.background }}>
       {/** Header */}
       <View
-        className="flex-row justify-between items-center bg-headerBg rounded-b-2xl"
-        style={{ height: hp(15), padding: wp(6), gap: wp(5) }}
+        className="flex-row justify-between items-center rounded-b-2xl"
+        style={{
+          height: hp(15),
+          padding: wp(6),
+          gap: wp(5),
+          backgroundColor: c.headerBg,
+        }}
       >
         <View>
           <Text
@@ -68,100 +99,41 @@ export default function AnalyticsScreen() {
       </View>
       {/** Statistics */}
       <View className="flex-row" style={{ gap: wp(3), padding: wp(6) }}>
-        {/** Income */}
-        <View
-          className="flex-1 bg-white rounded-2xl"
-          style={{ padding: wp(3), gap: wp(1) }}
-        >
+        {stats.map((s) => (
           <View
-            className="bg-[#E8F8F3] items-center justify-center rounded-full"
-            style={{ width: 40, height: 40 }}
+            key={s.label}
+            className="flex-1 rounded-2xl"
+            style={{ padding: wp(3), gap: wp(1), backgroundColor: c.surface }}
           >
-            <SmoothIcon name="arrow-ascending" size={32} color="#10B981" />
+            <View
+              className="items-center justify-center rounded-full"
+              style={{ width: 40, height: 40, backgroundColor: s.bg }}
+            >
+              {s.icon}
+            </View>
+            <Text
+              style={{
+                fontFamily: "OpenSans-Regular",
+                fontSize: 12,
+                color: c.textSecondary,
+              }}
+            >
+              {s.label}
+            </Text>
+            <Text
+              style={{
+                fontFamily: "OpenSans-Regular",
+                fontSize: 14,
+                color: s.color,
+              }}
+            >
+              {s.value} {currency.slice(5, 6)}
+            </Text>
           </View>
-          <Text
-            style={{
-              fontFamily: "OpenSans-Regular",
-              fontSize: 12,
-              color: "#374151",
-            }}
-          >
-            Income
-          </Text>
-          <Text
-            style={{
-              fontFamily: "OpenSans-Regular",
-              fontSize: 14,
-              color: "#10B981",
-            }}
-          >
-            {totalIncome} {currency.slice(5, 6)}
-          </Text>
-        </View>
-        {/** Expense */}
-        <View
-          className="flex-1 bg-white rounded-2xl"
-          style={{ padding: wp(3), gap: wp(1) }}
-        >
-          <View
-            className="bg-[#FCEAEA] items-center justify-center rounded-full"
-            style={{ width: 40, height: 40 }}
-          >
-            <SmoothIcon name="arrow-descending" size={32} color="#DC2626" />
-          </View>
-          <Text
-            style={{
-              fontFamily: "OpenSans-Regular",
-              fontSize: 12,
-              color: "#374151",
-            }}
-          >
-            Expense
-          </Text>
-          <Text
-            style={{
-              fontFamily: "OpenSans-Regular",
-              fontSize: 14,
-              color: "#DC2626",
-            }}
-          >
-            {totalExpense} {currency.slice(5, 6)}
-          </Text>
-        </View>
-        {/** Balance */}
-        <View
-          className="flex-1 bg-white rounded-2xl"
-          style={{ padding: wp(3), gap: wp(1) }}
-        >
-          <View
-            className="bg-[#FBF2ED] items-center justify-center rounded-full"
-            style={{ width: 40, height: 40 }}
-          >
-            <Text style={{ color: "#D17C4E", fontSize: 20 }}>$</Text>
-          </View>
-          <Text
-            style={{
-              fontFamily: "OpenSans-Regular",
-              fontSize: 12,
-              color: "#374151",
-            }}
-          >
-            Balance
-          </Text>
-          <Text
-            style={{
-              fontFamily: "OpenSans-Regular",
-              fontSize: 14,
-              color: "#D17C4E",
-            }}
-          >
-            {balance} {currency.slice(5, 6)}
-          </Text>
-        </View>
+        ))}
       </View>
       {/** Charts */}
       <View className="flex-1" style={{ paddingHorizontal: wp(6), gap: wp(3) }}>
-        {/** Segmented Buttons */}
         <AnimatedSegmentedButtons
           titles={["Income", "Expense"]}
           onChange={(index) =>
@@ -174,10 +146,9 @@ export default function AnalyticsScreen() {
           keyboardShouldPersistTaps="handled"
           bounces={false}
         >
-          {/** Pie Chart */}
           <View
-            className="bg-white rounded-2xl"
-            style={{ padding: wp(3), gap: wp(3) }}
+            className="rounded-2xl"
+            style={{ padding: wp(3), gap: wp(3), backgroundColor: c.surface }}
           >
             <PieChart type={selectedIndex === 0 ? "income" : "expense"} />
           </View>

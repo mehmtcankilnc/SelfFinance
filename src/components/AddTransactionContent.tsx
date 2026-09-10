@@ -16,11 +16,22 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import DatePickerModal from "./DatePickerModal";
 import { expenseCategories, incomeCategories } from "../data/categoryData";
 import { addTransactionSchema } from "../schemas/addTransactionSchema";
+import { useThemeColors } from "../theme/useThemeColors";
+import { haptics } from "../utilities/haptics";
 
 export default function AddTransactionContent() {
+  const { c } = useThemeColors();
   const closeBottomSheet = useBottomSheet((state) => state.closeBottomSheet);
-  const transactions = useTransactions((state) => state.transactions);
+  const props = useBottomSheet((state) => state.content?.props) as
+    | { mode?: "edit"; transaction?: Transaction }
+    | undefined;
+
+  const editing = props?.mode === "edit" && !!props.transaction;
+  const editTarget = props?.transaction;
+
   const addTransaction = useTransactions((state) => state.addTransaction);
+  const editTransaction = useTransactions((state) => state.editTransaction);
+
   const {
     control,
     handleSubmit,
@@ -30,31 +41,57 @@ export default function AddTransactionContent() {
   } = useForm<TransactionFromValues>({
     resolver: zodResolver(addTransactionSchema),
     defaultValues: {
-      transactionName: "",
-      transactionCategory: { id: 0, title: "", colorCode: "" },
-      transactionAmount: "",
-      transactionDate: new Date(),
+      transactionName: editTarget?.title ?? "",
+      transactionCategory: editTarget?.category ?? {
+        id: 0,
+        title: "",
+        colorCode: "",
+      },
+      transactionAmount: editTarget?.amount ?? "",
+      transactionDate: editTarget ? new Date(editTarget.date) : new Date(),
     },
   });
 
   const selectedDate = watch("transactionDate");
   const selectedCat = watch("transactionCategory");
 
-  const [isExpense, setIsExpense] = useState(true);
+  const [isExpense, setIsExpense] = useState(
+    editTarget ? editTarget.type === "expense" : true,
+  );
   const [isDateModalVisible, setIsDateModalVisible] = useState(false);
 
-  const handleAddNewTransaction = (data: TransactionFromValues) => {
-    let newTransaction: Transaction = {
-      id: transactions.length + 1,
-      type: isExpense ? "expense" : "income",
-      title: data.transactionName,
-      category: data.transactionCategory,
-      date: data.transactionDate,
-      amount: data.transactionAmount,
-    };
+  const onSubmit = (data: TransactionFromValues) => {
+    haptics.success();
 
-    addTransaction(newTransaction);
+    if (editing && editTarget) {
+      editTransaction({
+        ...editTarget,
+        type: isExpense ? "expense" : "income",
+        title: data.transactionName,
+        category: data.transactionCategory,
+        date: data.transactionDate,
+        amount: data.transactionAmount,
+      });
+    } else {
+      const newTransaction: Transaction = {
+        id: Date.now(),
+        type: isExpense ? "expense" : "income",
+        title: data.transactionName,
+        category: data.transactionCategory,
+        date: data.transactionDate,
+        amount: data.transactionAmount,
+      };
+      addTransaction(newTransaction);
+    }
+
     closeBottomSheet();
+  };
+
+  const switchType = (toExpense: boolean) => {
+    if (toExpense === isExpense) return;
+    haptics.selection();
+    setIsExpense(toExpense);
+    setValue("transactionCategory", { id: 0, title: "", colorCode: "" });
   };
 
   return (
@@ -69,24 +106,28 @@ export default function AddTransactionContent() {
     >
       {/** Title & Header */}
       <View
-        className="flex-row items-center justify-between border-b border-b-[#EBEBEB]"
-        style={{ paddingBottom: wp(2), paddingHorizontal: wp(6) }}
+        className="flex-row items-center justify-between border-b"
+        style={{
+          paddingBottom: wp(2),
+          paddingHorizontal: wp(6),
+          borderBottomColor: c.separator,
+        }}
       >
         <Text
-          className="text-textColor"
           style={{
             fontFamily: "Poppins-SemiBold",
             fontSize: 16,
             lineHeight: 24,
+            color: c.textPrimary,
           }}
         >
-          Add Transaction
+          {editing ? "Edit Transaction" : "Add Transaction"}
         </Text>
         <SmoothIcon
           onPress={closeBottomSheet}
           name="close"
           size={24}
-          color={"#242424"}
+          color={c.textPrimary}
         />
       </View>
       {/** Content */}
@@ -94,12 +135,15 @@ export default function AddTransactionContent() {
         {/** Transaction Name */}
         <View style={{ gap: wp(1) }}>
           <Text
-            className="text-secondaryText"
-            style={{ fontFamily: "Poppins-Medium", fontSize: 12 }}
+            style={{
+              fontFamily: "Poppins-Medium",
+              fontSize: 12,
+              color: c.textSecondary,
+            }}
           >
             Transaction Name{" "}
             {errors.transactionName && (
-              <Text className="color-[#e74c3c]">
+              <Text style={{ color: c.danger }}>
                 {errors.transactionName.message}
               </Text>
             )}
@@ -117,48 +161,18 @@ export default function AddTransactionContent() {
             )}
           />
         </View>
-        {/** Transaction Category */}
-        <View
-          style={{
-            gap: wp(1),
-            position: "relative",
-            zIndex: 999,
-            elevation: 10,
-          }}
-        >
-          <Text
-            className="text-secondaryText"
-            style={{ fontFamily: "Poppins-Medium", fontSize: 12 }}
-          >
-            Category{" "}
-            {errors.transactionCategory && (
-              <Text className="color-[#e74c3c]">
-                {errors.transactionCategory.id?.message ||
-                  errors.transactionCategory.title?.message}
-              </Text>
-            )}
-          </Text>
-          <CustomDropdown
-            dropdownData={isExpense ? expenseCategories : incomeCategories}
-            placeholder="Choose a Category"
-            onSelect={(cat) =>
-              setValue("transactionCategory", cat, {
-                shouldValidate: true,
-                shouldDirty: true,
-              })
-            }
-            selectedTitle={selectedCat.title}
-          />
-        </View>
         {/** Transaction Amount */}
         <View style={{ gap: wp(1) }}>
           <Text
-            className="text-secondaryText"
-            style={{ fontFamily: "Poppins-Medium", fontSize: 12 }}
+            style={{
+              fontFamily: "Poppins-Medium",
+              fontSize: 12,
+              color: c.textSecondary,
+            }}
           >
             Amount{" "}
             {errors.transactionAmount && (
-              <Text className="color-[#e74c3c]">
+              <Text style={{ color: c.danger }}>
                 {errors.transactionAmount.message}
               </Text>
             )}
@@ -180,65 +194,50 @@ export default function AddTransactionContent() {
         {/** Transaction Type */}
         <View style={{ gap: wp(1) }}>
           <Text
-            className="text-secondaryText"
-            style={{ fontFamily: "Poppins-Medium", fontSize: 12 }}
+            style={{
+              fontFamily: "Poppins-Medium",
+              fontSize: 12,
+              color: c.textSecondary,
+            }}
           >
             Transaction Type
           </Text>
           <View className="flex-row" style={{ gap: wp(3) }}>
             <Pressable
-              onPress={() => {
-                if (!isExpense) {
-                  setIsExpense(true);
-                  setValue("transactionCategory", {
-                    id: 0,
-                    title: "",
-                    colorCode: "",
-                  });
-                }
-              }}
+              onPress={() => switchType(true)}
               className="flex-1 rounded-2xl items-center justify-center"
               style={{
                 height: hp(6),
-                backgroundColor: isExpense ? "#DC2626" : "#F9FAFB",
+                backgroundColor: isExpense ? c.danger : c.surfaceAlt,
                 borderWidth: isExpense ? 0 : 1,
-                borderColor: "#E5E7EB",
+                borderColor: c.border,
               }}
             >
               <Text
                 style={{
                   fontFamily: "OpenSans-Regular",
                   fontSize: 14,
-                  color: isExpense ? "#FFFFFF" : "#4B5563",
+                  color: isExpense ? "#FFFFFF" : c.textSecondary,
                 }}
               >
                 Expense
               </Text>
             </Pressable>
             <Pressable
-              onPress={() => {
-                if (isExpense) {
-                  setIsExpense(false);
-                  setValue("transactionCategory", {
-                    id: 0,
-                    title: "",
-                    colorCode: "",
-                  });
-                }
-              }}
+              onPress={() => switchType(false)}
               className="flex-1 rounded-2xl items-center justify-center"
               style={{
                 height: hp(6),
-                backgroundColor: isExpense ? "#F9FAFB" : "#10B981",
+                backgroundColor: isExpense ? c.surfaceAlt : c.success,
                 borderWidth: isExpense ? 1 : 0,
-                borderColor: "#E5E7EB",
+                borderColor: c.border,
               }}
             >
               <Text
                 style={{
                   fontFamily: "OpenSans-Regular",
                   fontSize: 14,
-                  color: isExpense ? "#4B5563" : "#FFFFFF",
+                  color: isExpense ? c.textSecondary : "#FFFFFF",
                 }}
               >
                 Income
@@ -246,24 +245,64 @@ export default function AddTransactionContent() {
             </Pressable>
           </View>
         </View>
+        {/** Transaction Category */}
+        <View
+          style={{
+            gap: wp(1),
+            position: "relative",
+            zIndex: 999,
+            elevation: 10,
+          }}
+        >
+          <Text
+            style={{
+              fontFamily: "Poppins-Medium",
+              fontSize: 12,
+              color: c.textSecondary,
+            }}
+          >
+            Category{" "}
+            {errors.transactionCategory && (
+              <Text style={{ color: c.danger }}>
+                {errors.transactionCategory.id?.message ||
+                  errors.transactionCategory.title?.message}
+              </Text>
+            )}
+          </Text>
+          <CustomDropdown
+            dropdownData={isExpense ? expenseCategories : incomeCategories}
+            placeholder="Choose a Category"
+            onSelect={(cat) =>
+              setValue("transactionCategory", cat, {
+                shouldValidate: true,
+                shouldDirty: true,
+              })
+            }
+            selectedTitle={selectedCat.title}
+          />
+        </View>
         {/** Transaction Date */}
         <View style={{ gap: wp(1) }}>
           <Text
-            className="text-secondaryText"
-            style={{ fontFamily: "Poppins-Medium", fontSize: 12 }}
+            style={{
+              fontFamily: "Poppins-Medium",
+              fontSize: 12,
+              color: c.textSecondary,
+            }}
           >
             Date{" "}
             {errors.transactionDate && (
-              <Text className="color-[#e74c3c]">
+              <Text style={{ color: c.danger }}>
                 {errors.transactionDate.message}
               </Text>
             )}
           </Text>
           <Pressable
-            className="rounded-2xl border border-[#E5E7EB] justify-center"
+            className="rounded-2xl border justify-center"
             style={{
               height: hp(6),
-              backgroundColor: "#F9FAFB",
+              backgroundColor: c.surfaceAlt,
+              borderColor: c.border,
               paddingLeft: wp(4),
             }}
             onPress={() => setIsDateModalVisible(true)}
@@ -271,7 +310,7 @@ export default function AddTransactionContent() {
             <Text
               style={{
                 fontFamily: "OpenSans-Regular",
-                color: selectedDate ? "#111827" : "#9CA3AF",
+                color: selectedDate ? c.textPrimary : c.textTertiary,
               }}
             >
               {selectedDate
@@ -282,42 +321,35 @@ export default function AddTransactionContent() {
         </View>
         {/** Buttons */}
         <View className="flex-row" style={{ gap: wp(3), marginTop: wp(5) }}>
-          {/** Cancel Button */}
           <Pressable
             onPress={closeBottomSheet}
             className="flex-1 rounded-2xl items-center justify-center"
-            style={{
-              height: hp(6),
-              backgroundColor: "#F3F4F6",
-            }}
+            style={{ height: hp(6), backgroundColor: c.surfaceAlt }}
           >
             <Text
-              className="color-secondaryText"
               style={{
                 fontFamily: "OpenSans-Regular",
                 fontSize: 14,
+                color: c.textSecondary,
               }}
             >
               Cancel
             </Text>
           </Pressable>
-          {/** Add Button */}
           <Pressable
             testID="addTransactionButtonTest"
-            onPress={handleSubmit(handleAddNewTransaction)}
-            className="flex-1 rounded-2xl items-center justify-center bg-action"
-            style={{
-              height: hp(6),
-            }}
+            onPress={handleSubmit(onSubmit)}
+            className="flex-1 rounded-2xl items-center justify-center"
+            style={{ height: hp(6), backgroundColor: c.action }}
           >
             <Text
               style={{
                 fontFamily: "OpenSans-Regular",
                 fontSize: 14,
-                color: "#FFFFFF",
+                color: c.onAction,
               }}
             >
-              Add Transaction
+              {editing ? "Save Changes" : "Add Transaction"}
             </Text>
           </Pressable>
         </View>

@@ -5,8 +5,10 @@ import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 import SmoothIcon from "smooth-icon";
 import { avatarData, profileColorData } from "../data/profileData";
 import { useProfile } from "../store/useProfile";
+import { useThemeColors } from "../theme/useThemeColors";
 
 export default function EditProfileContent() {
+  const { c } = useThemeColors();
   const closeBottomSheet = useBottomSheet((state) => state.closeBottomSheet);
   const avatar = useProfile((state) => state?.avatar ?? 5);
   const profileColor = useProfile((state) => state?.profileColor ?? "#8B9DF0");
@@ -21,15 +23,19 @@ export default function EditProfileContent() {
       bounces={false}
     >
       <View
-        className="flex-row items-center justify-between border-b border-b-[#EBEBEB]"
-        style={{ paddingBottom: wp(2), paddingHorizontal: wp(6) }}
+        className="flex-row items-center justify-between border-b"
+        style={{
+          paddingBottom: wp(2),
+          paddingHorizontal: wp(6),
+          borderBottomColor: c.separator,
+        }}
       >
         <Text
-          className="text-textColor"
           style={{
             fontFamily: "Poppins-SemiBold",
             fontSize: 16,
             lineHeight: 24,
+            color: c.textPrimary,
           }}
         >
           Edit
@@ -38,15 +44,18 @@ export default function EditProfileContent() {
           onPress={closeBottomSheet}
           name="close"
           size={24}
-          color={"#242424"}
+          color={c.textPrimary}
         />
       </View>
       <View style={{ paddingHorizontal: wp(6), paddingTop: wp(2), gap: wp(3) }}>
         {/** Edit Profile Color */}
         <View style={{ gap: wp(1) }}>
           <Text
-            className="text-secondaryText"
-            style={{ fontFamily: "Poppins-Medium", fontSize: 12 }}
+            style={{
+              fontFamily: "Poppins-Medium",
+              fontSize: 12,
+              color: c.textSecondary,
+            }}
           >
             Profile Color
           </Text>
@@ -72,8 +81,11 @@ export default function EditProfileContent() {
         {/** Edit Avatar */}
         <View style={{ gap: wp(1) }}>
           <Text
-            className="text-secondaryText"
-            style={{ fontFamily: "Poppins-Medium", fontSize: 12 }}
+            style={{
+              fontFamily: "Poppins-Medium",
+              fontSize: 12,
+              color: c.textSecondary,
+            }}
           >
             Avatar
           </Text>
@@ -92,7 +104,7 @@ export default function EditProfileContent() {
                   style={{ width: wp(15), height: wp(15) }}
                   resizeMode="contain"
                 />
-                {avatar === item.image && (
+                {avatar === item.id && (
                   <View className="absolute bottom-0 right-0 bg-action rounded-full">
                     <SmoothIcon name="check" size={14} color={"#D8D8D8"} />
                   </View>

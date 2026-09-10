@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from "react-native";
-import React, { useState } from "react";
+import React from "react";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -7,8 +7,54 @@ import {
 import CustomDropdown from "./CustomDropdown";
 import { useFilter } from "../store/useFilter";
 import { allCategories } from "../data/categoryData";
+import { useThemeColors } from "../theme/useThemeColors";
+import { haptics } from "../utilities/haptics";
+
+function Pill({
+  label,
+  active,
+  onPress,
+  width,
+}: {
+  label: string;
+  active: boolean;
+  onPress: () => void;
+  width?: number;
+}) {
+  const { c } = useThemeColors();
+  return (
+    <Pressable
+      onPress={() => {
+        if (!active) {
+          haptics.selection();
+          onPress();
+        }
+      }}
+      className="items-center justify-center rounded-full"
+      style={{
+        height: hp(4),
+        flex: width === undefined ? 1 : undefined,
+        width,
+        backgroundColor: active ? c.action : c.surfaceAlt,
+        borderWidth: active ? 0 : 1,
+        borderColor: c.border,
+      }}
+    >
+      <Text
+        style={{
+          fontFamily: "OpenSans-Regular",
+          fontSize: 14,
+          color: active ? c.onAction : c.textSecondary,
+        }}
+      >
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
 
 export default function FilterSection() {
+  const { c } = useThemeColors();
   const currentTypeFilter = useFilter((state) => state.currentTypeFilter);
   const currentCategoryFilter = useFilter(
     (state) => state.currentCategoryFilter,
@@ -20,83 +66,33 @@ export default function FilterSection() {
   );
   const setCurrentDateFilter = useFilter((state) => state.setCurrentDateFilter);
 
+  const label = {
+    fontFamily: "Poppins-Medium",
+    fontSize: 12,
+    color: c.textSecondary,
+  } as const;
+
   return (
     <>
       {/** Type */}
       <View style={{ gap: wp(1) }}>
-        <Text
-          className="text-secondaryText"
-          style={{ fontFamily: "Poppins-Medium", fontSize: 12 }}
-        >
-          Transaction Type
-        </Text>
+        <Text style={label}>Transaction Type</Text>
         <View className="flex-row" style={{ gap: wp(3) }}>
-          {/** All */}
-          <Pressable
-            onPress={() =>
-              currentTypeFilter !== "all" && setCurrentTypeFilter("all")
-            }
-            className="flex-1 items-center justify-center rounded-full"
-            style={{
-              height: hp(4),
-              backgroundColor:
-                currentTypeFilter === "all" ? "#C67C4E" : "#F9FAFB",
-            }}
-          >
-            <Text
-              style={{
-                fontFamily: "OpenSans-Regular",
-                fontSize: 14,
-                color: currentTypeFilter === "all" ? "#FFFFFF" : "#4B5563",
-              }}
-            >
-              All
-            </Text>
-          </Pressable>
-          {/** Expense */}
-          <Pressable
-            onPress={() =>
-              currentTypeFilter !== "expense" && setCurrentTypeFilter("expense")
-            }
-            className="flex-1 items-center justify-center rounded-full"
-            style={{
-              height: hp(4),
-              backgroundColor:
-                currentTypeFilter === "expense" ? "#C67C4E" : "#F9FAFB",
-            }}
-          >
-            <Text
-              style={{
-                fontFamily: "OpenSans-Regular",
-                fontSize: 14,
-                color: currentTypeFilter === "expense" ? "#FFFFFF" : "#4B5563",
-              }}
-            >
-              Expense
-            </Text>
-          </Pressable>
-          {/** Income */}
-          <Pressable
-            onPress={() =>
-              currentTypeFilter !== "income" && setCurrentTypeFilter("income")
-            }
-            className="flex-1 items-center justify-center rounded-full"
-            style={{
-              height: hp(4),
-              backgroundColor:
-                currentTypeFilter === "income" ? "#C67C4E" : "#F9FAFB",
-            }}
-          >
-            <Text
-              style={{
-                fontFamily: "OpenSans-Regular",
-                fontSize: 14,
-                color: currentTypeFilter === "income" ? "#FFFFFF" : "#4B5563",
-              }}
-            >
-              Income
-            </Text>
-          </Pressable>
+          <Pill
+            label="All"
+            active={currentTypeFilter === "all"}
+            onPress={() => setCurrentTypeFilter("all")}
+          />
+          <Pill
+            label="Expense"
+            active={currentTypeFilter === "expense"}
+            onPress={() => setCurrentTypeFilter("expense")}
+          />
+          <Pill
+            label="Income"
+            active={currentTypeFilter === "income"}
+            onPress={() => setCurrentTypeFilter("income")}
+          />
         </View>
       </View>
       {/** Category */}
@@ -108,12 +104,7 @@ export default function FilterSection() {
           elevation: 10,
         }}
       >
-        <Text
-          className="text-secondaryText"
-          style={{ fontFamily: "Poppins-Medium", fontSize: 12 }}
-        >
-          Category
-        </Text>
+        <Text style={label}>Category</Text>
         <CustomDropdown
           dropdownData={allCategories}
           placeholder="Choose a Category"
@@ -131,108 +122,32 @@ export default function FilterSection() {
       </View>
       {/** Date Range */}
       <View style={{ gap: wp(1) }}>
-        <Text
-          className="text-secondaryText"
-          style={{ fontFamily: "Poppins-Medium", fontSize: 12 }}
-        >
-          Date Range
-        </Text>
+        <Text style={label}>Date Range</Text>
         <View className="flex-row flex-wrap" style={{ gap: wp(3) }}>
-          {/** All Time */}
-          <Pressable
-            onPress={() =>
-              currentDateFilter !== "all" && setCurrentDateFilter("all")
-            }
-            className="items-center justify-center rounded-full"
-            style={{
-              width: wp(42),
-              height: hp(4),
-              backgroundColor:
-                currentDateFilter === "all" ? "#C67C4E" : "#F9FAFB",
-            }}
-          >
-            <Text
-              style={{
-                fontFamily: "OpenSans-Regular",
-                fontSize: 14,
-                color: currentDateFilter === "all" ? "#FFFFFF" : "#4B5563",
-              }}
-            >
-              All Time
-            </Text>
-          </Pressable>
-          {/** Today */}
-          <Pressable
-            onPress={() =>
-              currentDateFilter !== "today" && setCurrentDateFilter("today")
-            }
-            className="items-center justify-center rounded-full"
-            style={{
-              width: wp(42),
-              height: hp(4),
-              backgroundColor:
-                currentDateFilter === "today" ? "#C67C4E" : "#F9FAFB",
-            }}
-          >
-            <Text
-              style={{
-                fontFamily: "OpenSans-Regular",
-                fontSize: 14,
-                color: currentDateFilter === "today" ? "#FFFFFF" : "#4B5563",
-              }}
-            >
-              Today
-            </Text>
-          </Pressable>
-          {/** This Week */}
-          <Pressable
-            onPress={() =>
-              currentDateFilter !== "thisWeek" &&
-              setCurrentDateFilter("thisWeek")
-            }
-            className="items-center justify-center rounded-full"
-            style={{
-              width: wp(42),
-              height: hp(4),
-              backgroundColor:
-                currentDateFilter === "thisWeek" ? "#C67C4E" : "#F9FAFB",
-            }}
-          >
-            <Text
-              style={{
-                fontFamily: "OpenSans-Regular",
-                fontSize: 14,
-                color: currentDateFilter === "thisWeek" ? "#FFFFFF" : "#4B5563",
-              }}
-            >
-              This Week
-            </Text>
-          </Pressable>
-          {/** This Month */}
-          <Pressable
-            onPress={() =>
-              currentDateFilter !== "thisMonth" &&
-              setCurrentDateFilter("thisMonth")
-            }
-            className="items-center justify-center rounded-full"
-            style={{
-              width: wp(42),
-              height: hp(4),
-              backgroundColor:
-                currentDateFilter === "thisMonth" ? "#C67C4E" : "#F9FAFB",
-            }}
-          >
-            <Text
-              style={{
-                fontFamily: "OpenSans-Regular",
-                fontSize: 14,
-                color:
-                  currentDateFilter === "thisMonth" ? "#FFFFFF" : "#4B5563",
-              }}
-            >
-              This Month
-            </Text>
-          </Pressable>
+          <Pill
+            label="All Time"
+            width={wp(42)}
+            active={currentDateFilter === "all"}
+            onPress={() => setCurrentDateFilter("all")}
+          />
+          <Pill
+            label="Today"
+            width={wp(42)}
+            active={currentDateFilter === "today"}
+            onPress={() => setCurrentDateFilter("today")}
+          />
+          <Pill
+            label="This Week"
+            width={wp(42)}
+            active={currentDateFilter === "thisWeek"}
+            onPress={() => setCurrentDateFilter("thisWeek")}
+          />
+          <Pill
+            label="This Month"
+            width={wp(42)}
+            active={currentDateFilter === "thisMonth"}
+            onPress={() => setCurrentDateFilter("thisMonth")}
+          />
         </View>
       </View>
     </>

@@ -1,5 +1,5 @@
-import { View, Text, Pressable, StyleSheet, Modal } from "react-native";
-import React, { useState } from "react";
+import { View, Text, Pressable, Modal } from "react-native";
+import React, { useCallback, useRef, useState } from "react";
 import { Transaction } from "../types/types";
 import {
   widthPercentageToDP as wp,
@@ -8,211 +8,248 @@ import {
 import SmoothIcon from "smooth-icon";
 import { useProfile } from "../store/useProfile";
 import { useTransactions } from "../store/useTransactions";
+import { useBottomSheet } from "../store/useBottomSheet";
+import { useThemeColors } from "../theme/useThemeColors";
+import { haptics } from "../utilities/haptics";
+import SwipeableRow, { SwipeableRowRef } from "./SwipeableRow";
 
 type Props = {
   transaction: Transaction;
 };
 
-export default function TransactionItem({ transaction }: Props) {
+const ROW_HEIGHT = wp(20);
+const CARD_RADIUS = 24;
+const ACTION_BTN = wp(13);
+const BTN_GAP = wp(2.5);
+const LEAD_GAP = wp(3);
+const ACTIONS_WIDTH = LEAD_GAP + ACTION_BTN + BTN_GAP + ACTION_BTN;
+
+function TransactionItem({ transaction }: Props) {
+  const { c } = useThemeColors();
   const isExpense = transaction.type === "expense";
   const currency = useProfile((state) => state?.currency ?? "USD ($)");
-  const { deleteTransaction } = useTransactions();
+  const deleteTransaction = useTransactions((state) => state.deleteTransaction);
+  const openBottomSheet = useBottomSheet((state) => state.openBottomSheet);
 
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [activeModalType, setActiveModalType] = useState<
-    "edit" | "delete" | null
-  >(null);
+  const rowRef = useRef<SwipeableRowRef>(null);
+  const [confirmVisible, setConfirmVisible] = useState(false);
+
+  const handleEdit = useCallback(() => {
+    haptics.tapLight();
+    rowRef.current?.close();
+    openBottomSheet("ADD_SCREEN", { mode: "edit", transaction });
+  }, [openBottomSheet, transaction]);
+
+  const askDelete = useCallback(() => {
+    haptics.tapLight();
+    setConfirmVisible(true);
+  }, []);
+
+  const confirmDelete = useCallback(() => {
+    haptics.success();
+    setConfirmVisible(false);
+    rowRef.current?.close();
+    deleteTransaction(transaction.id);
+  }, [deleteTransaction, transaction.id]);
+
+  const cancelDelete = useCallback(() => {
+    setConfirmVisible(false);
+    rowRef.current?.close();
+  }, []);
+
+  const renderRightActions = () => (
+    <View
+      className="flex-row items-center"
+      style={{ gap: BTN_GAP, paddingLeft: LEAD_GAP }}
+    >
+      <Pressable
+        onPress={handleEdit}
+        hitSlop={6}
+        className="items-center justify-center"
+        style={{
+          width: ACTION_BTN,
+          height: ACTION_BTN,
+          borderRadius: 20,
+          backgroundColor: c.action,
+        }}
+      >
+        <SmoothIcon name="edit2-outlined" size={24} color={c.onAction} />
+      </Pressable>
+      <Pressable
+        onPress={askDelete}
+        hitSlop={6}
+        className="items-center justify-center"
+        style={{
+          width: ACTION_BTN,
+          height: ACTION_BTN,
+          borderRadius: 20,
+          backgroundColor: c.deleteBtn,
+        }}
+      >
+        <SmoothIcon name="delete-outlined" size={24} color="#FFFFFF" />
+      </Pressable>
+    </View>
+  );
 
   return (
     <>
-      {/** Item's Itself */}
-      <Pressable
-        onLongPress={() => setIsEditMode(true)}
-        className="w-full flex-row items-center justify-between bg-white rounded-3xl"
-        style={{ padding: wp(5), gap: wp(2), height: wp(20) }}
+      <SwipeableRow
+        ref={rowRef}
+        height={ROW_HEIGHT}
+        borderRadius={CARD_RADIUS}
+        actionsWidth={ACTIONS_WIDTH}
+        renderRightActions={renderRightActions}
+        onFullSwipe={() => setConfirmVisible(true)}
       >
-        <View className="flex-1 flex-row items-center">
-          <View className="flex-1 flex-row items-center" style={{ gap: wp(2) }}>
-            <View
-              className="rounded-full"
-              style={{
-                backgroundColor: isExpense ? "#FCEAEA" : "#E8F8F3",
-                padding: wp(2),
-              }}
-            >
-              <SmoothIcon
-                name={isExpense ? "arrow-descending" : "arrow-ascending"}
-                size={24}
-                color={isExpense ? "#DC2626" : "#10B981"}
-              />
-            </View>
-            <View
-              className="flex"
-              style={{
-                width: wp(40),
-              }}
-            >
-              <Text
-                className="text-textColor"
-                style={{
-                  fontFamily: "Poppins-SemiBold",
-                  fontSize: 14,
-                }}
-                numberOfLines={1}
-              >
-                {transaction.title}
-              </Text>
-              <Text
-                style={{
-                  fontFamily: "OpenSans-Regular",
-                  fontSize: 10,
-                  color: transaction.category.colorCode,
-                }}
-              >
-                {`${transaction.category.title} • `}
-                <Text style={{ color: "#9CA3AF" }}>
-                  {new Date(transaction.date).toLocaleDateString("tr-TR")}
-                </Text>
-              </Text>
-            </View>
-          </View>
-          <Text
-            style={{
-              textAlign: "right",
-              color: isExpense ? "#DC2626" : "#10B981",
-              fontFamily: "Poppins-SemiBold",
-              fontSize: 16,
-              width: wp(20),
-              display: isEditMode ? "none" : "flex",
-            }}
-            numberOfLines={1}
-          >
-            {isExpense ? "-" : "+"}
-            {transaction.amount} {currency.slice(5, 6)}
-          </Text>
-        </View>
-      </Pressable>
-      {/** Edit Mode Options */}
-      <View
-        className="absolute right-0 flex-row rounded-3xl overflow-hidden"
-        style={{
-          display: isEditMode ? "flex" : "none",
-          height: wp(20),
-        }}
-      >
-        <Pressable
-          className="justify-center bg-action"
-          style={{ padding: wp(2) }}
-          onPress={() => setActiveModalType("edit")}
-        >
-          <SmoothIcon name="edit2-outlined" size={30} color="#FFFFFF" />
-        </Pressable>
-        <Pressable
-          className="justify-center bg-[#F9032C]"
-          style={{ padding: wp(2), marginLeft: -1 }}
-          onPress={() => setActiveModalType("delete")}
-        >
-          <SmoothIcon name="delete-outlined" size={30} color="#FFFFFF" />
-        </Pressable>
-        <Pressable
-          className="justify-center bg-headerBg"
-          style={{ padding: wp(2), marginLeft: -1 }}
-          onPress={() => {
-            setActiveModalType(null);
-            setIsEditMode(false);
+        <View
+          className="w-full flex-row items-center justify-between"
+          style={{
+            padding: wp(5),
+            gap: wp(2),
+            height: ROW_HEIGHT,
+            backgroundColor: c.surface,
+            borderRadius: CARD_RADIUS,
           }}
         >
-          <SmoothIcon name="close" size={30} color="#FFFFFF" />
-        </Pressable>
-      </View>
-      {/** Modals */}
-      <>
-        {/** Edit Modal */}
-        {/* <Modal
-          visible={activeModalType === "edit"}
-          transparent={true}
-          animationType="fade"
-          onRequestClose={() => setActiveModalType(null)}
-        >
-          <Pressable
-            className="flex-1 bg-black/50 justify-center items-center"
-            onPress={() => setActiveModalType(null)}
-          >
-            <Pressable
-              style={{ width: wp(85), height: wp(85) }}
-              className="bg-white rounded-3xl"
-              onPress={(e) => e.stopPropagation()}
-            ></Pressable>
-          </Pressable>
-        </Modal> */}
-        {/** Delete Modal */}
-        <Modal
-          visible={activeModalType === "delete"}
-          transparent={true}
-          animationType="fade"
-          onRequestClose={() => setActiveModalType(null)}
-        >
-          <Pressable
-            className="flex-1 bg-black/50 justify-center items-center"
-            onPress={() => setActiveModalType(null)}
-          >
-            <Pressable
-              style={{ width: wp(85), height: wp(50), padding: wp(5) }}
-              className="bg-white rounded-3xl items-center justify-between"
-              onPress={(e) => e.stopPropagation()}
+          <View className="flex-1 flex-row items-center">
+            <View
+              className="flex-1 flex-row items-center"
+              style={{ gap: wp(2) }}
             >
-              <Text
-                className="text-textColor text-center"
-                style={{ fontFamily: "Poppins-SemiBold", fontSize: 16 }}
-              >
-                Delete this transaction? This action cannot be undone.
-              </Text>
               <View
-                className="flex-row"
-                style={{ gap: wp(3), marginTop: wp(5) }}
+                className="rounded-full"
+                style={{
+                  backgroundColor: isExpense ? c.dangerBg : c.successBg,
+                  padding: wp(2),
+                }}
               >
-                {/** Cancel Button */}
-                <Pressable
-                  onPress={() => setActiveModalType(null)}
-                  className="flex-1 rounded-2xl items-center justify-center"
-                  style={{
-                    height: hp(6),
-                    backgroundColor: "#F3F4F6",
-                  }}
-                >
-                  <Text
-                    className="color-secondaryText"
-                    style={{
-                      fontFamily: "OpenSans-Regular",
-                      fontSize: 14,
-                    }}
-                  >
-                    Cancel
-                  </Text>
-                </Pressable>
-                {/** Confirm Button */}
-                <Pressable
-                  onPress={() => deleteTransaction(transaction.id)}
-                  className="flex-1 rounded-2xl items-center justify-center bg-[#F9032C]"
-                  style={{
-                    height: hp(6),
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontFamily: "OpenSans-Regular",
-                      fontSize: 14,
-                      color: "#FFFFFF",
-                    }}
-                  >
-                    Delete
-                  </Text>
-                </Pressable>
+                <SmoothIcon
+                  name={isExpense ? "arrow-descending" : "arrow-ascending"}
+                  size={24}
+                  color={isExpense ? c.danger : c.success}
+                />
               </View>
-            </Pressable>
+              <View className="flex" style={{ width: wp(40) }}>
+                <Text
+                  style={{
+                    fontFamily: "Poppins-SemiBold",
+                    fontSize: 14,
+                    color: c.textPrimary,
+                  }}
+                  numberOfLines={1}
+                >
+                  {transaction.title}
+                </Text>
+                <Text
+                  style={{
+                    fontFamily: "OpenSans-Regular",
+                    fontSize: 10,
+                    color: transaction.category.colorCode,
+                  }}
+                >
+                  {`${transaction.category.title} • `}
+                  <Text style={{ color: c.textTertiary }}>
+                    {new Date(transaction.date).toLocaleDateString("tr-TR")}
+                  </Text>
+                </Text>
+              </View>
+            </View>
+            <Text
+              style={{
+                textAlign: "right",
+                color: isExpense ? c.danger : c.success,
+                fontFamily: "Poppins-SemiBold",
+                fontSize: 16,
+                width: wp(20),
+              }}
+              numberOfLines={1}
+            >
+              {isExpense ? "-" : "+"}
+              {transaction.amount} {currency.slice(5, 6)}
+            </Text>
+          </View>
+        </View>
+      </SwipeableRow>
+
+      {/** Delete confirmation */}
+      <Modal
+        visible={confirmVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={cancelDelete}
+      >
+        <Pressable
+          className="flex-1 justify-center items-center"
+          style={{ backgroundColor: c.overlay }}
+          onPress={cancelDelete}
+        >
+          <Pressable
+            style={{
+              width: wp(85),
+              padding: wp(6),
+              backgroundColor: c.surface,
+            }}
+            className="rounded-3xl items-center justify-between"
+            onPress={(e) => e.stopPropagation()}
+          >
+            <Text
+              className="text-center"
+              style={{
+                fontFamily: "Poppins-SemiBold",
+                fontSize: 16,
+                color: c.textPrimary,
+              }}
+            >
+              Delete this transaction?
+            </Text>
+            <Text
+              className="text-center"
+              style={{
+                fontFamily: "OpenSans-Regular",
+                fontSize: 12,
+                color: c.textTertiary,
+                marginTop: wp(2),
+              }}
+            >
+              This action cannot be undone.
+            </Text>
+            <View className="flex-row" style={{ gap: wp(3), marginTop: wp(6) }}>
+              <Pressable
+                onPress={cancelDelete}
+                className="flex-1 rounded-2xl items-center justify-center"
+                style={{ height: hp(6), backgroundColor: c.surfaceAlt }}
+              >
+                <Text
+                  style={{
+                    fontFamily: "OpenSans-Regular",
+                    fontSize: 14,
+                    color: c.textSecondary,
+                  }}
+                >
+                  Cancel
+                </Text>
+              </Pressable>
+              <Pressable
+                onPress={confirmDelete}
+                className="flex-1 rounded-2xl items-center justify-center"
+                style={{ height: hp(6), backgroundColor: c.deleteBtn }}
+              >
+                <Text
+                  style={{
+                    fontFamily: "OpenSans-Regular",
+                    fontSize: 14,
+                    color: "#FFFFFF",
+                  }}
+                >
+                  Delete
+                </Text>
+              </Pressable>
+            </View>
           </Pressable>
-        </Modal>
-      </>
+        </Pressable>
+      </Modal>
     </>
   );
 }
+
+export default React.memo(TransactionItem);

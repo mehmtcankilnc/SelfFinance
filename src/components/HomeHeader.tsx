@@ -16,11 +16,13 @@ import { useNavigation } from "@react-navigation/native";
 import { useProfile } from "../store/useProfile";
 import { avatarData } from "../data/profileData";
 import FilterSection from "./FilterSection";
+import { useThemeColors } from "../theme/useThemeColors";
 
 const HEIGHT_VALUE = hp(35);
 
 export default function HomeHeader() {
   const navigation = useNavigation();
+  const { c } = useThemeColors();
   const avatar = useProfile((state) => state?.avatar ?? 5);
   const displayName = useProfile((state) => state?.displayName ?? "Guest");
   const profileColor = useProfile((state) => state?.profileColor ?? "#8B9DF0");
@@ -65,9 +67,13 @@ export default function HomeHeader() {
   return (
     <>
       <Animated.View
-        className="bg-headerBg"
         style={[
-          { height: hp(25), padding: wp(6), gap: wp(5) },
+          {
+            height: hp(25),
+            padding: wp(6),
+            gap: wp(5),
+            backgroundColor: c.headerBg,
+          },
           animatedBorderRadius,
         ]}
       >
@@ -133,7 +139,7 @@ export default function HomeHeader() {
       <Animated.View
         style={[
           {
-            backgroundColor: "white",
+            backgroundColor: c.surface,
             width: "100%",
             elevation: 3,
             paddingHorizontal: wp(6),

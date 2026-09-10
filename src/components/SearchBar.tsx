@@ -15,14 +15,14 @@ export default function SearchBar() {
         onChangeText={(text) => setSearchText(text)}
         className="rounded-xl"
         style={{
-          backgroundColor: "#2A2A2A",
+          backgroundColor: "rgba(255,255,255,0.12)",
           width: wp(65),
           paddingLeft: wp(10),
           fontFamily: "OpenSans-Regular",
           color: "#FFFFFF",
         }}
         placeholder="Search..."
-        placeholderTextColor={"#FFFFFF"}
+        placeholderTextColor={"rgba(255,255,255,0.6)"}
         cursorColor={"#FFFFFF"}
       />
       <View className="absolute left-2">

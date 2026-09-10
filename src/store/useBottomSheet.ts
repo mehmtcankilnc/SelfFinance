@@ -1,7 +1,8 @@
 import { create } from "zustand";
+import { Transaction } from "../types/types";
 
 export type BottomSheetPropsMap = {
-  ADD_SCREEN: undefined;
+  ADD_SCREEN: { mode?: "edit"; transaction?: Transaction } | undefined;
   EDIT_AVATAR: undefined;
 };
 

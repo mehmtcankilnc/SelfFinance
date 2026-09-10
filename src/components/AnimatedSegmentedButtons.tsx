@@ -6,6 +6,8 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
+import { useThemeColors } from "../theme/useThemeColors";
+import { haptics } from "../utilities/haptics";
 
 type Props = {
   titles: string[];
@@ -13,6 +15,7 @@ type Props = {
 };
 
 export default function AnimatedSegmentedButtons({ titles, onChange }: Props) {
+  const { c } = useThemeColors();
   const [activeIndex, setActiveIndex] = useState(0);
   const [containerWidth, setContainerWidth] = useState(0);
 
@@ -20,6 +23,7 @@ export default function AnimatedSegmentedButtons({ titles, onChange }: Props) {
 
   const handleSwitch = (index: number) => {
     if (index !== activeIndex && containerWidth > 0) {
+      haptics.selection();
       setActiveIndex(index);
       onChange(index);
 
@@ -40,7 +44,8 @@ export default function AnimatedSegmentedButtons({ titles, onChange }: Props) {
 
   return (
     <View
-      className="w-full flex-row rounded-2xl relative overflow-hidden bg-white"
+      className="w-full flex-row rounded-2xl relative overflow-hidden"
+      style={{ backgroundColor: c.surface }}
       onLayout={(e: LayoutChangeEvent) => {
         const width = e.nativeEvent.layout.width;
         setContainerWidth(width);
@@ -77,9 +82,8 @@ export default function AnimatedSegmentedButtons({ titles, onChange }: Props) {
               }}
             >
               <Text
-                className={`text-center font-semibold ${
-                  isActive ? "text-white" : "text-textColor"
-                }`}
+                className="text-center font-semibold"
+                style={{ color: isActive ? "#FFFFFF" : c.textPrimary }}
               >
                 {title}
               </Text>

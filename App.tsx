@@ -9,8 +9,10 @@ import DropdownProvider from "./src/providers/DropdownProvider";
 import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import AppStack from "./src/navigation/AppStack";
+import { useThemeColors } from "./src/theme/useThemeColors";
 
 export default function App() {
+  const { c } = useThemeColors();
   const [fontsLoaded, fontError] = Font.useFonts({
     "Poppins-SemiBold": require("./assets/fonts/Poppins-SemiBold.ttf"),
     "Poppins-Medium": require("./assets/fonts/Poppins-Medium.ttf"),
@@ -31,7 +33,7 @@ export default function App() {
     <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutRootView}>
       <SafeAreaProvider>
         <SafeAreaView
-          style={{ flex: 1, backgroundColor: "#313131" }}
+          style={{ flex: 1, backgroundColor: c.headerBg }}
           edges={["top", "left", "right"]}
         >
           <DropdownProvider>
@@ -41,7 +43,7 @@ export default function App() {
             </NavigationContainer>
           </DropdownProvider>
         </SafeAreaView>
-        <StatusBar style="light" backgroundColor="black" />
+        <StatusBar style={c.statusBar} backgroundColor={c.headerBg} />
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

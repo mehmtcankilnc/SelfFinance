@@ -7,15 +7,21 @@ import CenterTabBg from "../components/CenterTabBg";
 import EmptyScreen from "../screens/EmptyScreen";
 import { useBottomSheet } from "../store/useBottomSheet";
 import { ReactNode } from "react";
+import { useThemeColors } from "../theme/useThemeColors";
+import { haptics } from "../utilities/haptics";
 
 const Tab = createBottomTabNavigator();
 
 const CustomTabButton = ({
   children,
   onPress,
+  notchColor,
+  actionColor,
 }: {
   children: ReactNode;
   onPress: () => void;
+  notchColor: string;
+  actionColor: string;
 }) => (
   <TouchableOpacity
     style={{ justifyContent: "center", alignItems: "center" }}
@@ -27,7 +33,7 @@ const CustomTabButton = ({
         style={{
           position: "absolute",
           zIndex: 10,
-          backgroundColor: "#C67C4E",
+          backgroundColor: actionColor,
           top: -20,
           borderRadius: 30,
           width: 60,
@@ -37,7 +43,7 @@ const CustomTabButton = ({
       >
         <SmoothIcon name="plus" size={30} color={"#EDEDED"} />
       </View>
-      <CenterTabBg />
+      <CenterTabBg color={notchColor} />
       {children}
     </View>
   </TouchableOpacity>
@@ -45,13 +51,19 @@ const CustomTabButton = ({
 
 export default function BottomTabs() {
   const { openBottomSheet } = useBottomSheet();
+  const { c } = useThemeColors();
+
+  const openAdd = () => {
+    haptics.tapLight();
+    openBottomSheet("ADD_SCREEN");
+  };
 
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: "#FFFFFF",
+          backgroundColor: c.tabBar,
           elevation: 0,
           borderTopWidth: 0,
           shadowOpacity: 0,
@@ -68,12 +80,15 @@ export default function BottomTabs() {
             <SmoothIcon
               name="home"
               size={24}
-              color={focused ? "#C67C4E" : "#A2A2A2"}
+              color={focused ? c.tabActive : c.tabInactive}
             />
           ),
           tabBarLabel: ({ focused }) => (
             <Text
-              style={{ color: focused ? "#C67C4E" : "#A2A2A2", fontSize: 12 }}
+              style={{
+                color: focused ? c.tabActive : c.tabInactive,
+                fontSize: 12,
+              }}
             >
               Home
             </Text>
@@ -87,7 +102,9 @@ export default function BottomTabs() {
           tabBarButton: (props) => (
             <CustomTabButton
               {...props}
-              onPress={() => openBottomSheet("ADD_SCREEN")}
+              onPress={openAdd}
+              notchColor={c.background}
+              actionColor={c.action}
             />
           ),
           tabBarIconStyle: {
@@ -100,7 +117,7 @@ export default function BottomTabs() {
         listeners={{
           tabPress: (e) => {
             e.preventDefault();
-            openBottomSheet("ADD_SCREEN");
+            openAdd();
           },
         }}
       />
@@ -112,12 +129,15 @@ export default function BottomTabs() {
             <SmoothIcon
               name="chart"
               size={24}
-              color={focused ? "#C67C4E" : "#A2A2A2"}
+              color={focused ? c.tabActive : c.tabInactive}
             />
           ),
           tabBarLabel: ({ focused }) => (
             <Text
-              style={{ color: focused ? "#C67C4E" : "#A2A2A2", fontSize: 12 }}
+              style={{
+                color: focused ? c.tabActive : c.tabInactive,
+                fontSize: 12,
+              }}
             >
               Analytics
             </Text>

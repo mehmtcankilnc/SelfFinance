@@ -8,6 +8,7 @@ import SmoothIcon from "smooth-icon";
 import { DropdownItem } from "../types/types";
 import { ScrollView } from "react-native-gesture-handler";
 import { useDropdown } from "../hooks/useDropdown";
+import { useThemeColors } from "../theme/useThemeColors";
 import Animated, {
   EntryAnimationsValues,
   ExitAnimationsValues,
@@ -53,6 +54,7 @@ export default function CustomDropdown<T extends DropdownItem>({
   onSelect,
   selectedTitle,
 }: CustomDropdownProps<T>) {
+  const { c } = useThemeColors();
   const [isOpen, setIsOpen] = useState(false);
 
   const ref = useRef<View>(null);
@@ -68,11 +70,11 @@ export default function CustomDropdown<T extends DropdownItem>({
       entering={SlideDownEnter}
       exiting={SlideUpExit}
       style={{
-        backgroundColor: "#FFFFFF",
+        backgroundColor: c.surface,
         borderBottomLeftRadius: 16,
         borderBottomRightRadius: 16,
         borderWidth: 1,
-        borderColor: "#C67C4E",
+        borderColor: c.action,
         maxHeight: hp(24),
         overflow: "hidden",
       }}
@@ -93,10 +95,10 @@ export default function CustomDropdown<T extends DropdownItem>({
               paddingVertical: hp(1.5),
               paddingHorizontal: wp(4),
               borderBottomWidth: index === dropdownData.length - 1 ? 0 : 1,
-              borderBottomColor: "#F3F4F6",
+              borderBottomColor: c.separator,
               backgroundColor:
                 selectedTitle && selectedTitle === item.title
-                  ? "#FDF1E7"
+                  ? c.actionSoft
                   : "transparent",
             }}
           >
@@ -104,8 +106,8 @@ export default function CustomDropdown<T extends DropdownItem>({
               style={{
                 color:
                   selectedTitle && selectedTitle === item.title
-                    ? "#C67C4E"
-                    : "#374151",
+                    ? c.action
+                    : c.textSecondary,
                 fontFamily: "OpenSans-Regular",
               }}
             >
@@ -146,11 +148,11 @@ export default function CustomDropdown<T extends DropdownItem>({
         onPress={toggleDropdown}
         style={{
           height: hp(6),
-          backgroundColor: "#F9FAFB",
+          backgroundColor: c.surfaceAlt,
           paddingLeft: icon ? wp(10) : wp(4),
           paddingRight: wp(4),
           borderWidth: 1,
-          borderColor: isOpen ? "#C67C4E" : "#E5E7EB",
+          borderColor: isOpen ? c.action : c.border,
           borderTopRightRadius: 16,
           borderTopLeftRadius: 16,
           borderBottomRightRadius: isOpen ? 0 : 16,
@@ -163,7 +165,7 @@ export default function CustomDropdown<T extends DropdownItem>({
         {icon && <View className="absolute top-3 left-2">{icon}</View>}
         <Text
           style={{
-            color: selectedTitle ? "#111827" : "#9CA3AF",
+            color: selectedTitle ? c.textPrimary : c.textTertiary,
             fontFamily: "OpenSans-Regular",
           }}
         >
@@ -172,7 +174,7 @@ export default function CustomDropdown<T extends DropdownItem>({
         <SmoothIcon
           name={isOpen ? "chevron-up" : "chevron-down"}
           size={20}
-          color={isOpen ? "#C67C4E" : "#9CA3AF"}
+          color={isOpen ? c.action : c.textTertiary}
         />
       </Pressable>
     </View>

@@ -4,6 +4,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
+import { useThemeColors } from "../theme/useThemeColors";
 
 interface Props extends TextInputProps {
   text: string;
@@ -21,6 +22,7 @@ export default function CustomTextInput({
   type = "default",
   ...rest
 }: Props) {
+  const { c } = useThemeColors();
   const [isFocused, setIsFocused] = useState(false);
 
   return (
@@ -31,18 +33,18 @@ export default function CustomTextInput({
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         placeholder={placeholder}
-        placeholderTextColor={"#9CA3AF"}
+        placeholderTextColor={c.textTertiary}
         className="rounded-2xl border"
         style={{
           height: hp(6),
-          backgroundColor: "#F9FAFB",
-          color: "#111827",
+          backgroundColor: c.surfaceAlt,
+          color: c.textPrimary,
           paddingLeft: icon ? wp(10) : wp(4),
-          borderColor: isFocused ? "#C67C4E" : "#E5E7EB",
+          borderColor: isFocused ? c.action : c.border,
           fontFamily: "OpenSans-Regular",
         }}
         {...rest}
-        cursorColor={"#111827"}
+        cursorColor={c.textPrimary}
         keyboardType={type}
       />
       {icon && <View className="absolute top-3 left-2">{icon}</View>}

@@ -21,12 +21,14 @@ import { scheduleOnRN } from "react-native-worklets";
 import { Content, useBottomSheet } from "../store/useBottomSheet";
 import AddTransactionContent from "./AddTransactionContent";
 import EditProfileContent from "./EditProfileContent";
+import { useThemeColors } from "../theme/useThemeColors";
+import { haptics } from "../utilities/haptics";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const SPRING_CONFIG = {
-  damping: 15,
-  stiffness: 100,
+  damping: 18,
+  stiffness: 180,
   mass: 1,
 };
 
@@ -48,6 +50,7 @@ const renderContent = (content: Content) => {
 };
 
 export default function GlobalBottomSheet() {
+  const { c } = useThemeColors();
   const isOpen = useBottomSheet((state) => state.isOpen);
   const content = useBottomSheet((state) => state.content);
   const closeBottomSheet = useBottomSheet((state) => state.closeBottomSheet);
@@ -86,6 +89,7 @@ export default function GlobalBottomSheet() {
   useEffect(() => {
     if (isOpen) {
       setIsSheetVisible(true);
+      haptics.tapLight();
       translateY.value = withSpring(0, SPRING_CONFIG);
     } else {
       translateY.value = withTiming(SCREEN_HEIGHT, TIMING_CONFIG);
@@ -170,8 +174,11 @@ export default function GlobalBottomSheet() {
         <View className="flex-1 justify-end" pointerEvents="box-none">
           <Animated.View
             onStartShouldSetResponder={() => true}
-            style={[rSheetStyle, { maxHeight: "100%" }]}
-            className="w-full bg-backgroundColor rounded-t-2xl shadow-lg md:max-w-lg md:mx-auto md:bottom-4 md:rounded-xl"
+            style={[
+              rSheetStyle,
+              { maxHeight: "100%", backgroundColor: c.surfaceElevated },
+            ]}
+            className="w-full rounded-t-2xl shadow-lg md:max-w-lg md:mx-auto md:bottom-4 md:rounded-xl"
           >
             <GestureDetector gesture={panGesture}>
               <Animated.View className="w-full pt-3 pb-4 items-center bg-transparent">
